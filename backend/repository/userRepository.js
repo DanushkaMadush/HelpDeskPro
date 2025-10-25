@@ -1,7 +1,7 @@
 const UserModel = require('../models/UserModel');
 
-const createUser = async (userdata) => {
-    const user = new UserModel(userDate);
+const createUser = async (userData) => {
+    const user = new UserModel(userData);
     const savedUser = await user.save();
     return savedUser.toObject();
 };
