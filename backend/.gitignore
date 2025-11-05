@@ -1,0 +1,86 @@
+# Visual Studio / ASP.NET / .NET Core .gitignore
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vspscc
+*.vssscc
+
+# Visual Studio directories
+.vs/
+.vscode/
+
+# Build results
+[Bb]in/
+[Oo]bj/
+artifacts/
+publish/
+*/publish/
+*.Publish.xml
+*.builds
+
+# NuGet & packages
+*.nupkg
+packages/
+.nuget/
+project.lock.json
+project.fragment.lock.json
+
+# ASP.NET Core / .NET Core
+*.runtimeconfig.json
+*.deps.json
+*.deps.lock
+.dotnet/
+publish/
+wwwroot/lib/
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# Node / front-end
+node_modules/
+npm-debug.log*
+yarn-error.log
+bower_components/
+
+# Logs, test results, coverage
+*.log
+TestResults/
+coverage/
+*.coverage
+*.coverage.xml
+
+# IIS Express / local web server
+/.vs/
+IISExpress/
+*.vspscc
+
+# Secrets / local config
+secrets.json
+appsettings.*.Development.json
+appsettings.*.Local.json
+*.key
+*.pfx
+
+# Visual Studio build artifacts
+*.dbmdl
+*.bak
+*.mdf
+*.ldf
+
+# Rider / ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+# OS generated files
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Misc
+*.userprefs
+*.tmp
+*.log.*
