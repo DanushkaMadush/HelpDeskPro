@@ -48,5 +48,35 @@ namespace backend.Controllers
             }
             return Ok(new { Token = token });
         }
+
+        [HttpPost("create-role")]
+        public async Task<IActionResult> CreateRole([FromBody] CreateRoleRequest request)
+        {
+            var result = await _userService.CreateRoleAsync(request.RoleName);
+            if (!result) return BadRequest("Role creation failed.");
+
+            return Ok(new { message = "Role created successfully." });
+        }
+
+        [HttpPost("assign-role")]
+        public async Task<IActionResult> AssignRole([FromBody] AssignRoleRequest request)
+        {
+            var result = await _userService.AssignRoleAsync(request.Email, request.RoleName);
+            if (!result) return BadRequest("Failed to assign role.");
+
+            return Ok(new { message = "Role assigned successfully." });
+        }
+
+        public class CreateRoleRequest
+        {
+            public string RoleName { get; set; } = string.Empty;
+        }
+
+        public class AssignRoleRequest
+        {
+            public string Email { get; set; } = string.Empty;
+            public string RoleName { get; set; } = string.Empty;
+        }
+
     }
 }
