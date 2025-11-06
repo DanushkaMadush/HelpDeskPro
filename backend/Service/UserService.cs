@@ -64,5 +64,19 @@ namespace backend.Service
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public async Task<bool> CreateRoleAsync(string roleName)
+        {
+            return await _userRepository.CreateRoleAsync(roleName);
+        }
+
+        public async Task<bool> AssignRoleAsync(string email, string roleName)
+        {
+            var user = await _userRepository.GetByEmailAsync(email);
+            if (user == null) return false;
+
+            return await _userRepository.AssignRoleAsync(user, roleName);
+        }
+
     }
 }
