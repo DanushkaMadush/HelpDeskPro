@@ -2,6 +2,8 @@
 using backend.Interface;
 using backend.Models.Entities;
 using backend.Models.DTOs;
+using static backend.Models.DTOs.PermissionDTO;
+using static backend.Models.DTOs.RoleDTO;
 
 namespace backend.Controllers
 {
@@ -67,16 +69,33 @@ namespace backend.Controllers
             return Ok(new { message = "Role assigned successfully." });
         }
 
-        public class CreateRoleRequest
+        [HttpPost("create-permission")]
+        public async Task<IActionResult> CreatePermission([FromBody] CreatePermissionRequest request)
         {
-            public string RoleName { get; set; } = string.Empty;
+            var result = await _userService.CreatePermissionAsync(request.Name, request.Description);
+            if (!result) return BadRequest("Failed to create permission.");
+            return Ok(new { message = "Permission created successfully." });
         }
 
-        public class AssignRoleRequest
+        [HttpPost("assign-permission")]
+        public async Task<IActionResult> AssignPermission([FromBody] AssignPermissionRequest request)
         {
-            public string Email { get; set; } = string.Empty;
-            public string RoleName { get; set; } = string.Empty;
+            var result = await _userService.AssignPermissionToRoleAsync(request.RoleName, request.PermissionName);
+            if (!result) return BadRequest("Failed to assign permission.");
+            return Ok(new { message = "Permission assigned successfully." });
         }
+
+        [HttpPost("assign-permission-to-user")]
+        public async Task<IActionResult> AssignPermissionToUser([FromBody] AssignPermissionToUserRequest request)
+        {
+            var result = await _userService.AssignPermissionToUserAsync(request.Email, request.PermissionName);
+            if (!result) return BadRequest("Failed to assign permission to user.");
+
+            return Ok(new { message = "Permission assigned to user successfully." });
+        }
+
+
+
 
     }
 }
