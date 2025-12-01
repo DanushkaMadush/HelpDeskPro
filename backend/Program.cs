@@ -11,14 +11,28 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5021);
+});
+
 builder.Services.AddOpenApi();
-builder.Services.AddDbContext<UserDBContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("UserDBConnection")));
-builder.Services.AddDbContext<HelpDeskProDBContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("HelpDeskProDBConnection")));
+builder.Services.AddDbContext<UserDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("UserDBConnection")));
+builder.Services.AddDbContext<HelpDeskProDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("HelpDeskProDBConnection")));
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<UserDBContext>()
     .AddDefaultTokenProviders();
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 builder.Services.AddAuthentication(options =>
@@ -60,7 +74,7 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = string.Empty;
     });
 }
-
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
