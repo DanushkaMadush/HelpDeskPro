@@ -19,5 +19,7 @@ public partial class SystemEntity
 
     public DateTime? updatedAt { get; set; }
 
+    public virtual ICollection<SystemDeveloperAssign> SystemDeveloperAssigns { get; set; } = new List<SystemDeveloperAssign>();
+
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 }

@@ -20,6 +20,8 @@ public partial class HelpDeskProDBContext : DbContext
 
     public virtual DbSet<Department> Departments { get; set; }
 
+    public virtual DbSet<SystemDeveloperAssign> SystemDeveloperAssigns { get; set; }
+
     public virtual DbSet<SystemEntity> SystemEntities { get; set; }
 
     public virtual DbSet<Ticket> Tickets { get; set; }
@@ -58,6 +60,17 @@ public partial class HelpDeskProDBContext : DbContext
             entity.Property(e => e.isActive).HasDefaultValue(true);
             entity.Property(e => e.updatedAt).HasColumnType("datetime");
             entity.Property(e => e.updatedBy).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<SystemDeveloperAssign>(entity =>
+        {
+            entity.HasKey(e => e.sysDevId);
+
+            entity.ToTable("SystemDeveloperAssign");
+
+            entity.HasOne(d => d.system).WithMany(p => p.SystemDeveloperAssigns)
+                .HasForeignKey(d => d.systemId)
+                .HasConstraintName("FK_SystemDeveloperAssign_SystemEntity");
         });
 
         modelBuilder.Entity<SystemEntity>(entity =>
