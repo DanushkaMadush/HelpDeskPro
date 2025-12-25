@@ -108,9 +108,9 @@ namespace backend.Repository
                 {
                     branches.Add(new BranchDTOs.BranchResponse
                     {
-                        BranchId = reader.GetInt32(reader.GetOrdinal("BranchId")),
-                        BranchName = reader.GetString(reader.GetOrdinal("BranchName")),
-                        Address = reader.GetString(reader.GetOrdinal("Address"))
+                        BranchId = reader.GetInt32(reader.GetOrdinal("branchId")),
+                        BranchName = reader.GetString(reader.GetOrdinal("branchName")),
+                        Address = reader.GetString(reader.GetOrdinal("address"))
                     });
                 }
             }

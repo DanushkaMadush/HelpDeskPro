@@ -18,8 +18,7 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(
-        BranchDTOs.BranchCreateRequest request)
+        public async Task<IActionResult> Create(BranchDTOs.BranchCreateRequest request)
         {
             var result = await _service.CreateBranchAsync(request);
 

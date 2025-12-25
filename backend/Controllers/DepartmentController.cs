@@ -1,12 +1,37 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using backend.Interface;
+using backend.Models.DTOs;
 
 namespace backend.Controllers
 {
-    public class DepartmentController : Controller
+    [ApiController]
+    [Route("api/departments")]
+
+    public class DepartmentController : ControllerBase
     {
-        public IActionResult Index()
+        private readonly IDepartmentService _service;
+
+        public DepartmentController(IDepartmentService service)
         {
-            return View();
+            _service = service;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(DepartmentDTOs.DepartmentCreateRequest request)
+        {
+            var result = await _service.CreateDepartmentAsync(request);
+
+            if (!string.IsNullOrEmpty(result.ErrorMessage))
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var departments = await _service.GetAllDepartmentsAsync();
+            return Ok(departments);
         }
     }
 }
