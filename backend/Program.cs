@@ -23,6 +23,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<UserDBContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<IBranchRepository, BranchRepository>();
+builder.Services.AddScoped<IBranchService, BranchService>();
+
 
 builder.Services.AddCors(options =>
 {
