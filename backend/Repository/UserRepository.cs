@@ -118,5 +118,23 @@ namespace backend.Repository
 
             return permissionsViaRoles.Concat(directPermissions).Distinct().ToList();
         }
+
+        public async Task<List<ApplicationUser>> GetAllUsersAsync()
+        {
+            return _userManager.Users.ToList();
+        }
+
+        public async Task<List<ApplicationUser>> GetUsersByRoleAsync(string roleName)
+        {
+            if (!await _roleManager.RoleExistsAsync(roleName))
+                return new List<ApplicationUser>();
+
+            return (await _userManager.GetUsersInRoleAsync(roleName)).ToList();
+        }
+
+        public async Task<IList<string>> GetUserRolesAsync(ApplicationUser user)
+        {
+            return await _userManager.GetRolesAsync(user);
+        }
     }
 }

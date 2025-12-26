@@ -7,7 +7,7 @@ using static backend.Models.DTOs.RoleDTO;
 
 namespace backend.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/users")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -94,8 +94,11 @@ namespace backend.Controllers
             return Ok(new { message = "Permission assigned to user successfully." });
         }
 
-
-
-
+        [HttpGet]
+        public async Task<IActionResult> GetUsers([FromQuery] string? role)
+        {
+            var users = await _userService.GetUsersAsync(role);
+            return Ok(users);
+        }
     }
 }

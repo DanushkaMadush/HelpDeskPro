@@ -14,5 +14,8 @@ namespace backend.Interface
         Task<List<string>> GetPermissionsByUserAsync(ApplicationUser user);
         Task<bool> AssignPermissionToUserAsync(string email, string permissionName);
         Task<List<string>> GetPermissionsByUserDirectAsync(ApplicationUser user);
+        Task<List<ApplicationUser>> GetAllUsersAsync();
+        Task<List<ApplicationUser>> GetUsersByRoleAsync(string roleName);
+        Task<IList<string>> GetUserRolesAsync(ApplicationUser user);
     }
 }

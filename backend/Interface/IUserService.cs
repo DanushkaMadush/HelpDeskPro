@@ -1,4 +1,5 @@
 ﻿using backend.Models.Entities;
+using static backend.Models.DTOs.UserDTOs;
 
 namespace backend.Interface
 {
@@ -11,5 +12,6 @@ namespace backend.Interface
         Task<bool> CreatePermissionAsync(string name, string description);
         Task<bool> AssignPermissionToRoleAsync(string roleName, string permissionName);
         Task<bool> AssignPermissionToUserAsync(string email, string permissionName);
+        Task<List<UserResponseDto>> GetUsersAsync(string? role);
     }
 }

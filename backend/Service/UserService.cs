@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using static backend.Models.DTOs.UserDTOs;
 
 namespace backend.Service
 {
@@ -110,7 +111,36 @@ namespace backend.Service
             return await _userRepository.AssignPermissionToUserAsync(email, permissionName);
         }
 
+        public async Task<List<UserResponseDto>> GetUsersAsync(string? role)
+        {
+            List<ApplicationUser> users;
 
+            if (!string.IsNullOrWhiteSpace(role))
+            {
+                users = await _userRepository.GetUsersByRoleAsync(role);
+            }
+            else
+            {
+                users = await _userRepository.GetAllUsersAsync();
+            }
 
+            var result = new List<UserResponseDto>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userRepository.GetUserRolesAsync(user);
+
+                result.Add(new UserResponseDto
+                {
+                    Id = user.Id,
+                    Email = user.Email!,
+                    FirstName = user.FirstName!,
+                    LastName = user.LastName!,
+                    Roles = roles
+                });
+            }
+
+            return result;
+        }
     }
 }
