@@ -182,7 +182,7 @@ namespace backend.Repository
                     CommandType = CommandType.StoredProcedure
                 };
 
-                command.Parameters.AddWithValue("@UserId", request.SystemId);
+                command.Parameters.AddWithValue("@SystemId", request.SystemId);
 
                 await connection.OpenAsync();
 
@@ -208,6 +208,57 @@ namespace backend.Repository
             catch (Exception ex)
             {
                 throw new Exception("Unexpected error while fetching systems by user.", ex);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                    await connection.CloseAsync();
+            }
+        }
+
+        public async Task<SystemDTOs.SystemCreateResponse> AssignSystemsToDevelopersAsync(SystemDTOs.SystemAssignRequest request)
+        {
+            var connection = (SqlConnection)_context.Database.GetDbConnection();
+
+            try
+            {
+                using var command = new SqlCommand("usp_System_Assign", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@SystemId", request.SystemId);
+                command.Parameters.AddWithValue("@UserId", request.UserId);
+
+                var successMessage = new SqlParameter("@SuccessMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                var errorMessage = new SqlParameter("@ErrorMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                command.Parameters.Add(successMessage);
+                command.Parameters.Add(errorMessage);
+
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+
+                return new SystemDTOs.SystemCreateResponse
+                {
+                    SuccessMessage = successMessage.Value?.ToString(),
+                    ErrorMessage = errorMessage.Value?.ToString()
+                };
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Database error while creating system.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error while creating system.", ex);
             }
             finally
             {

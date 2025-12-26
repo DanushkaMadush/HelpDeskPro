@@ -37,5 +37,11 @@
         {
             public int SystemId { get; set; }
         }
+
+        public class SystemAssignRequest
+        {
+            public int SystemId { get; set; }
+            public string UserId { get; set; } = null!;
+        }
     }
 }

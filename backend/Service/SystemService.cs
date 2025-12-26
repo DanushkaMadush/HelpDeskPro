@@ -32,5 +32,9 @@ namespace backend.Service
             return _repository.GetUsersBySystemIdAsync(request);
         }
 
+        public Task<SystemDTOs.SystemCreateResponse> AssignSystemsToDevelopersAsync(SystemDTOs.SystemAssignRequest request)
+        {
+            return _repository.AssignSystemsToDevelopersAsync(request);
+        }
     }
 }

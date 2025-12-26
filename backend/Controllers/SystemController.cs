@@ -47,5 +47,16 @@ namespace backend.Controllers
             var branches = await _service.GetUsersBySystemIdAsync(request);
             return Ok(branches);
         }
+
+        [HttpPost("assign")]
+        public async Task<IActionResult> AssignSystemsToDevelopersAsync(SystemDTOs.SystemAssignRequest request)
+        {
+            var result = await _service.AssignSystemsToDevelopersAsync(request);
+
+            if (!string.IsNullOrEmpty(result.ErrorMessage))
+                return BadRequest(result);
+
+            return Ok(result);
+        }
     }
 }
