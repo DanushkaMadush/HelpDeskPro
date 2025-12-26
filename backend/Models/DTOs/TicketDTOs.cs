@@ -55,5 +55,48 @@
         {
             public required string UserId { get; set; }
         }
+
+        public class UpdateTicketStatusRequest
+        {
+            public int TicketId { get; set; }
+            public int StatusId { get; set; }
+            public required string UpdatedBy { get; set; }
+        }
+
+        public class UpdateTicketStatusResponse
+        {
+            public string? SuccessMessage { get; set; }
+            public string? ErrorMessage { get; set; }
+        }
+
+        public class SoftDeleteTicketRequest
+        {
+            public int TicketId { get; set; }
+            public required string UpdatedBy { get; set; }
+        }
+
+        public class SoftDeleteTicketResponse
+        {
+            public string? SuccessMessage { get; set; }
+            public string? ErrorMessage { get; set; }
+        }
+
+        public class UpdateTicketDetailsRequest
+        {
+            public int TicketId { get; set; }
+            public required string Title { get; set; }
+            public string? Description { get; set; }
+            public int BranchId { get; set; }
+            public int DepartmentId { get; set; }
+            public int SystemId { get; set; }
+            public int PriorityId { get; set; }
+            public required string UpdatedBy { get; set; }
+        }
+
+        public class UpdateTicketDetailsResponse
+        {
+            public string? SuccessMessage { get; set; }
+            public string? ErrorMessage { get; set; }
+        }
     }
 }

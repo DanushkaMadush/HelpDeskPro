@@ -238,6 +238,167 @@ namespace backend.Repository
             return tickets;
         }
 
+        public async Task<TicketDTOs.UpdateTicketStatusResponse> UpdateStatusAsync(TicketDTOs.UpdateTicketStatusRequest request)
+        {
+            var connection = (SqlConnection)_context.Database.GetDbConnection();
+
+            try
+            {
+                using var command = new SqlCommand("usp_Ticket_UpdateStatus", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@TicketId", request.TicketId);
+                command.Parameters.AddWithValue("@StatusId", request.StatusId);
+                command.Parameters.AddWithValue("@UpdatedBy", request.UpdatedBy);
+
+                var successMessage = new SqlParameter("@SuccessMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                var errorMessage = new SqlParameter("@ErrorMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                command.Parameters.Add(successMessage);
+                command.Parameters.Add(errorMessage);
+
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+
+                return new TicketDTOs.UpdateTicketStatusResponse
+                {
+                    SuccessMessage = successMessage.Value?.ToString(),
+                    ErrorMessage = errorMessage.Value?.ToString()
+                };
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Database error while updating ticket status.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error while updating ticket status.", ex);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                    await connection.CloseAsync();
+            }
+        }
+
+        public async Task<TicketDTOs.SoftDeleteTicketResponse> SoftDeleteAsync(TicketDTOs.SoftDeleteTicketRequest request)
+        {
+            var connection = (SqlConnection)_context.Database.GetDbConnection();
+
+            try
+            {
+                using var command = new SqlCommand("usp_Ticket_Delete", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@TicketId", request.TicketId);
+                command.Parameters.AddWithValue("@UpdatedBy", request.UpdatedBy);
+
+                var successMessage = new SqlParameter("@SuccessMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                var errorMessage = new SqlParameter("@ErrorMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                command.Parameters.Add(successMessage);
+                command.Parameters.Add(errorMessage);
+
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+
+                return new TicketDTOs.SoftDeleteTicketResponse
+                {
+                    SuccessMessage = successMessage.Value?.ToString(),
+                    ErrorMessage = errorMessage.Value?.ToString()
+                };
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Database error while deleting ticket.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error while deleting ticket.", ex);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                    await connection.CloseAsync();
+            }
+        }
+
+        public async Task<TicketDTOs.UpdateTicketDetailsResponse> UpdateDetailsAsync(TicketDTOs.UpdateTicketDetailsRequest request)
+        {
+            var connection = (SqlConnection)_context.Database.GetDbConnection();
+
+            try
+            {
+                using var command = new SqlCommand("usp_Ticket_UpdateDetails", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@TicketId", request.TicketId);
+                command.Parameters.AddWithValue("@Title", request.Title);
+                command.Parameters.AddWithValue("@Description", request.Description ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@BranchId", request.BranchId);
+                command.Parameters.AddWithValue("@DepartmentId", request.DepartmentId);
+                command.Parameters.AddWithValue("@SystemId", request.SystemId);
+                command.Parameters.AddWithValue("@PriorityId", request.PriorityId);
+                command.Parameters.AddWithValue("@UpdatedBy", request.UpdatedBy);
+
+                var successMessage = new SqlParameter("@SuccessMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                var errorMessage = new SqlParameter("@ErrorMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                command.Parameters.Add(successMessage);
+                command.Parameters.Add(errorMessage);
+
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+
+                return new TicketDTOs.UpdateTicketDetailsResponse
+                {
+                    SuccessMessage = successMessage.Value?.ToString(),
+                    ErrorMessage = errorMessage.Value?.ToString()
+                };
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Database error while updating ticket details.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error while updating ticket details.", ex);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                    await connection.CloseAsync();
+            }
+        }
+
+
         private static TicketDTOs.TicketResponse MapTicket(SqlDataReader reader)
         {
             int GetOrdinal(string name) => reader.GetOrdinal(name);

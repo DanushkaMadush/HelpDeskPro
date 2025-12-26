@@ -9,5 +9,8 @@ namespace backend.Interface
         Task<TicketDTOs.TicketResponse?> GetByIdAsync(TicketDTOs.GetTicketByIdRequest request);
         Task<IEnumerable<TicketDTOs.TicketResponse>> GetAllBySystemIdAsync(TicketDTOs.GetAllTicketsBySystemIdRequest request);
         Task<IEnumerable<TicketDTOs.TicketResponse>> GetAllByUserIdAsync(TicketDTOs.GetAllTicketsByUserIdRequest request);
+        Task<TicketDTOs.UpdateTicketStatusResponse> UpdateStatusAsync(TicketDTOs.UpdateTicketStatusRequest request);
+        Task<TicketDTOs.SoftDeleteTicketResponse> SoftDeleteAsync(TicketDTOs.SoftDeleteTicketRequest request);
+        Task<TicketDTOs.UpdateTicketDetailsResponse> UpdateDetailsAsync(TicketDTOs.UpdateTicketDetailsRequest request);
     }
 }

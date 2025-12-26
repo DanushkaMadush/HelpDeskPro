@@ -68,5 +68,45 @@ namespace backend.Controllers
 
             return Ok(tickets);
         }
+
+        [HttpPatch("status")]
+        public async Task<IActionResult> UpdateStatus([FromBody] TicketDTOs.UpdateTicketStatusRequest request)
+        {
+            var response = await _ticketService.UpdateTicketStatusAsync(request);
+
+            if (!string.IsNullOrEmpty(response.ErrorMessage))
+                return BadRequest(response);
+
+            return Ok(response);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateDetails([FromBody] TicketDTOs.UpdateTicketDetailsRequest request)
+        {
+            var response = await _ticketService.UpdateTicketDetailsAsync(request);
+
+            if (!string.IsNullOrEmpty(response.ErrorMessage))
+                return BadRequest(response);
+
+            return Ok(response);
+        }
+
+        [HttpDelete("{ticketId:int}")]
+        public async Task<IActionResult> SoftDelete(
+            int ticketId,
+            [FromQuery] string updatedBy)
+        {
+            var response = await _ticketService.SoftDeleteTicketAsync(
+                new TicketDTOs.SoftDeleteTicketRequest
+                {
+                    TicketId = ticketId,
+                    UpdatedBy = updatedBy
+                });
+
+            if (!string.IsNullOrEmpty(response.ErrorMessage))
+                return BadRequest(response);
+
+            return Ok(response);
+        }
     }
 }
