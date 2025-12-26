@@ -29,6 +29,9 @@ builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<ISystemRepository, SystemRepository>();
 builder.Services.AddScoped<ISystemService, SystemService>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<ITicketService, TicketService>();
+
 
 
 builder.Services.AddCors(options =>
