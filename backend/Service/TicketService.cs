@@ -51,5 +51,32 @@ namespace backend.Service
         {
             return await _ticketRepository.UpdateDetailsAsync(request);
         }
+
+        public async Task<TicketDTOs.UploadMediaResponse> UploadMediaAsync(TicketDTOs.UploadMediaRequest request,
+            string storedFileName,
+            string filePath,
+            long fileSize,
+            string mimeType,
+            int? durationSeconds)
+        {
+            return await _ticketRepository.CreateMediaAsync(
+                request,
+                storedFileName,
+                filePath,
+                fileSize,
+                mimeType,
+                durationSeconds);
+        }
+
+        public async Task<IEnumerable<TicketDTOs.TicketMediaResponse>> GetMediaByTicketIdAsync(
+            int ticketId)
+        {
+            return await _ticketRepository.GetMediaByTicketIdAsync(ticketId);
+        }
+
+        public async Task<TicketDTOs.DeleteMediaResponse> DeleteMediaAsync(TicketDTOs.DeleteMediaRequest request)
+        {
+            return await _ticketRepository.DeleteMediaAsync(request);
+        }
     }
 }

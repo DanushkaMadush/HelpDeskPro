@@ -9,10 +9,12 @@ namespace backend.Controllers
     public class TicketController : ControllerBase
     {
         private readonly ITicketService _ticketService;
+        private readonly IWebHostEnvironment _environment;
 
-        public TicketController(ITicketService ticketService)
+        public TicketController(ITicketService ticketService, IWebHostEnvironment environment)
         {
             _ticketService = ticketService;
+            _environment = environment;
         }
 
         [HttpPost]
@@ -100,6 +102,78 @@ namespace backend.Controllers
                 new TicketDTOs.SoftDeleteTicketRequest
                 {
                     TicketId = ticketId,
+                    UpdatedBy = updatedBy
+                });
+
+            if (!string.IsNullOrEmpty(response.ErrorMessage))
+                return BadRequest(response);
+
+            return Ok(response);
+        }
+
+        [HttpPost("{ticketId:int}/media")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Upload(int ticketId, [FromForm] TicketDTOs.UploadMediaRequest request)
+        {
+            if (request.File == null || request.File.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            request.TicketId = ticketId;
+
+            var uploadsRoot = Path.Combine(
+                _environment.ContentRootPath,
+                "uploads",
+                "tickets",
+                ticketId.ToString());
+
+            if (!Directory.Exists(uploadsRoot))
+                Directory.CreateDirectory(uploadsRoot);
+
+            var storedFileName = $"{Guid.NewGuid()}{Path.GetExtension(request.File.FileName)}";
+            var filePath = Path.Combine(uploadsRoot, storedFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await request.File.CopyToAsync(stream);
+            }
+
+            var relativePath = Path.GetRelativePath(_environment.ContentRootPath, filePath);
+
+            var mimeType = request.File.ContentType;
+            var fileSize = request.File.Length;
+            int? durationSeconds = null;
+
+            var response = await _ticketService.UploadMediaAsync(
+                request,
+                storedFileName,
+                relativePath,
+                fileSize,
+                mimeType,
+                durationSeconds);
+
+            if (!string.IsNullOrEmpty(response.ErrorMessage))
+                return BadRequest(response);
+
+            return Ok(response);
+        }
+
+        [HttpGet("{ticketId:int}/media")]
+        public async Task<IActionResult> GetByTicketId(int ticketId)
+        {
+            var media = await _ticketService.GetMediaByTicketIdAsync(ticketId);
+            return Ok(media);
+        }
+
+        [HttpDelete("{ticketId:int}/media/{ticketMediaId:int}")]
+        public async Task<IActionResult> SoftDelete(
+            int ticketId,
+            int ticketMediaId,
+            [FromQuery] string updatedBy)
+        {
+            var response = await _ticketService.DeleteMediaAsync(
+                new TicketDTOs.DeleteMediaRequest
+                {
+                    TicketMediaId = ticketMediaId,
                     UpdatedBy = updatedBy
                 });
 

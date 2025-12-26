@@ -98,5 +98,43 @@
             public string? SuccessMessage { get; set; }
             public string? ErrorMessage { get; set; }
         }
+
+        public class UploadMediaRequest
+        {
+            public int TicketId { get; set; }
+            public IFormFile File { get; set; } = null!;
+            public required string UploadedBy { get; set; }
+        }
+
+        public class UploadMediaResponse
+        {
+            public string? SuccessMessage { get; set; }
+            public string? ErrorMessage { get; set; }
+        }
+
+        public class TicketMediaResponse
+        {
+            public int TicketMediaId { get; set; }
+            public int TicketId { get; set; }
+            public string FileName { get; set; } = null!;
+            public string OriginalFileName { get; set; } = null!;
+            public string FilePath { get; set; } = null!;
+            public string MimeType { get; set; } = null!;
+            public long FileSize { get; set; }
+            public int? DurationSeconds { get; set; }
+            public DateTime UploadedAt { get; set; }
+        }
+
+        public class DeleteMediaRequest
+        {
+            public int TicketMediaId { get; set; }
+            public required string UpdatedBy { get; set; }
+        }
+
+        public class DeleteMediaResponse
+        {
+            public string? SuccessMessage { get; set; }
+            public string? ErrorMessage { get; set; }
+        }
     }
 }

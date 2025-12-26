@@ -12,5 +12,13 @@ namespace backend.Interface
         Task<TicketDTOs.UpdateTicketStatusResponse> UpdateTicketStatusAsync(TicketDTOs.UpdateTicketStatusRequest request);
         Task<TicketDTOs.SoftDeleteTicketResponse> SoftDeleteTicketAsync(TicketDTOs.SoftDeleteTicketRequest request);
         Task<TicketDTOs.UpdateTicketDetailsResponse> UpdateTicketDetailsAsync(TicketDTOs.UpdateTicketDetailsRequest request);
+        Task<TicketDTOs.UploadMediaResponse> UploadMediaAsync(TicketDTOs.UploadMediaRequest request,
+            string storedFileName,
+            string filePath,
+            long fileSize,
+            string mimeType,
+            int? durationSeconds);
+        Task<IEnumerable<TicketDTOs.TicketMediaResponse>> GetMediaByTicketIdAsync(int ticketId);
+        Task<TicketDTOs.DeleteMediaResponse> DeleteMediaAsync(TicketDTOs.DeleteMediaRequest request);
     }
 }

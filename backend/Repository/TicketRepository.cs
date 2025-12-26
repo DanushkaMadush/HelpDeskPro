@@ -398,7 +398,6 @@ namespace backend.Repository
             }
         }
 
-
         private static TicketDTOs.TicketResponse MapTicket(SqlDataReader reader)
         {
             int GetOrdinal(string name) => reader.GetOrdinal(name);
@@ -423,6 +422,183 @@ namespace backend.Repository
                 UpdatedBy = reader.IsDBNull(GetOrdinal("updatedBy")) ? null : reader.GetString(GetOrdinal("updatedBy")),
                 UpdatedAt = reader.IsDBNull(GetOrdinal("updatedAt")) ? null : reader.GetDateTime(GetOrdinal("updatedAt"))
             };
+        }
+
+        public async Task<TicketDTOs.UploadMediaResponse> CreateMediaAsync(TicketDTOs.UploadMediaRequest request,
+            string storedFileName,
+            string filePath,
+            long fileSize,
+            string mimeType,
+            int? durationSeconds)
+        {
+            var connection = (SqlConnection)_context.Database.GetDbConnection();
+
+            try
+            {
+                using var command = new SqlCommand("usp_TicketMedia_Create", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@TicketId", request.TicketId);
+                command.Parameters.AddWithValue("@FileName", storedFileName);
+                command.Parameters.AddWithValue("@OriginalFileName", request.File.FileName);
+                command.Parameters.AddWithValue("@FilePath", filePath);
+                command.Parameters.AddWithValue("@MimeType", mimeType);
+                command.Parameters.AddWithValue("@FileSize", fileSize);
+                command.Parameters.AddWithValue("@DurationSeconds", durationSeconds ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@UploadedBy", request.UploadedBy);
+
+                var successMessage = new SqlParameter("@SuccessMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                var errorMessage = new SqlParameter("@ErrorMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                command.Parameters.Add(successMessage);
+                command.Parameters.Add(errorMessage);
+
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+
+                return new TicketDTOs.UploadMediaResponse
+                {
+                    SuccessMessage = successMessage.Value?.ToString(),
+                    ErrorMessage = errorMessage.Value?.ToString()
+                };
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Database error while saving ticket media.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error while saving ticket media.", ex);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                    await connection.CloseAsync();
+            }
+        }
+
+        public async Task<IEnumerable<TicketDTOs.TicketMediaResponse>> GetMediaByTicketIdAsync(int ticketId)
+        {
+            var mediaList = new List<TicketDTOs.TicketMediaResponse>();
+            var connection = (SqlConnection)_context.Database.GetDbConnection();
+
+            try
+            {
+                using var command = new SqlCommand("usp_TicketMedia_GetByTicketId", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@TicketId", ticketId);
+
+                var successMessage = new SqlParameter("@SuccessMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                var errorMessage = new SqlParameter("@ErrorMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                command.Parameters.Add(successMessage);
+                command.Parameters.Add(errorMessage);
+
+                await connection.OpenAsync();
+
+                using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    mediaList.Add(new TicketDTOs.TicketMediaResponse
+                    {
+                        TicketMediaId = reader.GetInt32(reader.GetOrdinal("ticketMediaId")),
+                        TicketId = reader.GetInt32(reader.GetOrdinal("ticketId")),
+                        FileName = reader.GetString(reader.GetOrdinal("fileName")),
+                        OriginalFileName = reader.GetString(reader.GetOrdinal("originalFileName")),
+                        FilePath = reader.GetString(reader.GetOrdinal("filePath")),
+                        MimeType = reader.GetString(reader.GetOrdinal("mimeType")),
+                        FileSize = reader.GetInt64(reader.GetOrdinal("fileSize")),
+                        DurationSeconds = reader["durationSeconds"] as int?,
+                        UploadedAt = reader.GetDateTime(reader.GetOrdinal("uploadedAt"))
+                    });
+                }
+
+                return mediaList;
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Database error while retrieving ticket media.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error while retrieving ticket media.", ex);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                    await connection.CloseAsync();
+            }
+        }
+
+        public async Task<TicketDTOs.DeleteMediaResponse> DeleteMediaAsync(TicketDTOs.DeleteMediaRequest request)
+        {
+            var connection = (SqlConnection)_context.Database.GetDbConnection();
+
+            try
+            {
+                using var command = new SqlCommand("usp_TicketMedia_SoftDelete", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@TicketMediaId", request.TicketMediaId);
+                command.Parameters.AddWithValue("@UpdatedBy", request.UpdatedBy);
+
+                var successMessage = new SqlParameter("@SuccessMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                var errorMessage = new SqlParameter("@ErrorMessage", SqlDbType.NVarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                command.Parameters.Add(successMessage);
+                command.Parameters.Add(errorMessage);
+
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+
+                return new TicketDTOs.DeleteMediaResponse
+                {
+                    SuccessMessage = successMessage.Value?.ToString(),
+                    ErrorMessage = errorMessage.Value?.ToString()
+                };
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Database error while deleting ticket media.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error while deleting ticket media.", ex);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                    await connection.CloseAsync();
+            }
         }
     }
 }
