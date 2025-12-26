@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/systems")]
+    [Route("api/v1/systems")]
 
     public class SystemController : ControllerBase
     {

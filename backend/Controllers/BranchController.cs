@@ -6,7 +6,7 @@ using backend.Interface;
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/branches")]
+    [Route("api/v1/branches")]
 
     public class BranchController : ControllerBase
     {

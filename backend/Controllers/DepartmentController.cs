@@ -5,7 +5,7 @@ using backend.Models.DTOs;
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/departments")]
+    [Route("api/v1/departments")]
 
     public class DepartmentController : ControllerBase
     {
