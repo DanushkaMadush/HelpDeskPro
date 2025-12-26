@@ -30,22 +30,28 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var branches = await _service.GetAllSystemsAsync();
-            return Ok(branches);
+            var systems = await _service.GetAllSystemsAsync();
+            return Ok(systems);
         }
 
-        [HttpGet("by-user")]
-        public async Task<IActionResult> GetSystemsByUserIdAsync([FromQuery] SystemDTOs.GetSystemsByUserIdRequest request)
+        [HttpGet("by-user/{userId}")]
+        public async Task<IActionResult> GetSystemsByUserIdAsync(string userId)
         {
-            var branches = await _service.GetSystemsByUserIdAsync(request);
-            return Ok(branches);
+            var systems = await _service.GetSystemsByUserIdAsync(new SystemDTOs.GetSystemsByUserIdRequest
+            {
+                UserId = userId
+            });
+            return Ok(systems);
         }
 
-        [HttpGet("users-by-system")]
-        public async Task<IActionResult> GetUsersBySystemIdAsync([FromQuery] SystemDTOs.GetUsersBySystemIdRequest request)
+        [HttpGet("users-by-system/{systemId:int}")]
+        public async Task<IActionResult> GetUsersBySystemIdAsync(int systemId)
         {
-            var branches = await _service.GetUsersBySystemIdAsync(request);
-            return Ok(branches);
+            var users = await _service.GetUsersBySystemIdAsync(new SystemDTOs.GetUsersBySystemIdRequest
+            {
+                SystemId = systemId
+            });
+            return Ok(users);
         }
 
         [HttpPost("assign")]
