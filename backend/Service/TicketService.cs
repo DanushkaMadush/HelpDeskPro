@@ -6,15 +6,46 @@ namespace backend.Service
     public class TicketService : ITicketService
     {
         private readonly ITicketRepository _ticketRepository;
+        private readonly INotificationService _notificationService;
+        private readonly ISystemService _systemService;
 
-        public TicketService(ITicketRepository ticketRepository)
+        public TicketService(ITicketRepository ticketRepository, ISystemService systemService, INotificationService notificationService)
         {
             _ticketRepository = ticketRepository;
+            _systemService = systemService;
+            _notificationService = notificationService;
         }
 
         public async Task<TicketDTOs.CreateTicketResponse> CreateTicketAsync(TicketDTOs.CreateTicketRequest request)
         {
-            return await _ticketRepository.CreateAsync(request);
+            var result = await _ticketRepository.CreateAsync(request);
+
+            if (!string.IsNullOrEmpty(result.ErrorMessage))
+                return result;
+
+            var systemUsers = await _systemService.GetUsersBySystemIdAsync(new SystemDTOs.GetUsersBySystemIdRequest
+            {
+                SystemId = request.SystemId
+            });
+
+            var developerUserIds = systemUsers
+                .Select(user => user.UserId)
+                .Distinct()
+                .ToList();
+
+            if (!developerUserIds.Any())
+                return result;
+
+            var notification = new NotificationDTOs.NotificationMessage
+            {
+                Title = "New Ticket Created",
+                Message = $"A new ticket was created for system ID {request.SystemId}.",
+                SystemId = request.SystemId
+            };
+
+            await _notificationService.NotifyUsersAsync(developerUserIds, notification);
+
+            return result;
         }
 
         public async Task<IEnumerable<TicketDTOs.TicketResponse>> GetAllTicketsAsync()
