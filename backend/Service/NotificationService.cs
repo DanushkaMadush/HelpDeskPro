@@ -8,14 +8,18 @@ namespace backend.Service
     public class NotificationService : INotificationService
     {
         private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly INotificationRepository _notificationRepository;
 
-        public NotificationService(IHubContext<NotificationHub> hubContext)
+        public NotificationService(IHubContext<NotificationHub> hubContext, INotificationRepository notificationRepository)
         {
             _hubContext = hubContext;
+            _notificationRepository = notificationRepository;
         }
 
         public async Task NotifyUserAsync(string userId, NotificationMessage message)
         {
+            await _notificationRepository.CreateAsync(message, userId);
+
             var groupName = $"user_{userId}";
 
             await _hubContext

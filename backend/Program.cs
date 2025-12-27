@@ -33,7 +33,9 @@ builder.Services.AddScoped<ISystemRepository, SystemRepository>();
 builder.Services.AddScoped<ISystemService, SystemService>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+
 
 builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
