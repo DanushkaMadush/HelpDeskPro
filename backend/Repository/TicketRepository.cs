@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using backend.Interface;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using backend.Models.Entities;
 
 namespace backend.Repository
 {
@@ -53,12 +54,35 @@ namespace backend.Repository
                 command.Parameters.Add(successMessage);
                 command.Parameters.Add(errorMessage);
 
-                await command.ExecuteNonQueryAsync();
+                TicketDTOs.TicketResponse? createdTicket = null;
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        createdTicket = new TicketDTOs.TicketResponse
+                        {
+                            TicketId = reader.GetInt32(reader.GetOrdinal("TicketId")),
+                            Title = reader.GetString(reader.GetOrdinal("Title")),
+                            Description = reader["Description"] as string,
+                            BranchId = reader.GetInt32(reader.GetOrdinal("BranchId")),
+                            DepartmentId = reader.GetInt32(reader.GetOrdinal("DepartmentId")),
+                            SystemId = reader.GetInt32(reader.GetOrdinal("SystemId")),
+                            StatusId = reader.GetInt32(reader.GetOrdinal("StatusId")),
+                            PriorityId = reader.GetInt32(reader.GetOrdinal("PriorityId")),
+                            CreatedBy = reader.GetString(reader.GetOrdinal("CreatedBy")),
+                            CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
+                            UpdatedBy = reader["UpdatedBy"] as string,
+                            UpdatedAt = reader["UpdatedAt"] as DateTime?
+                        };
+                    }
+                }
 
                 return new TicketDTOs.CreateTicketResponse
                 {
                     SuccessMessage = successMessage.Value?.ToString(),
-                    ErrorMessage = errorMessage.Value?.ToString()
+                    ErrorMessage = errorMessage.Value?.ToString(),
+                    Ticket = createdTicket
                 };
             }
             catch (SqlException ex)
