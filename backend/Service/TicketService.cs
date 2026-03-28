@@ -8,12 +8,14 @@ namespace backend.Service
         private readonly ITicketRepository _ticketRepository;
         private readonly INotificationService _notificationService;
         private readonly ISystemService _systemService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TicketService(ITicketRepository ticketRepository, ISystemService systemService, INotificationService notificationService)
+        public TicketService(ITicketRepository ticketRepository, ISystemService systemService, INotificationService notificationService, IHttpContextAccessor httpContextAccessor)
         {
             _ticketRepository = ticketRepository;
             _systemService = systemService;
             _notificationService = notificationService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<TicketDTOs.CreateTicketResponse> CreateTicketAsync(TicketDTOs.CreateTicketRequest request)
@@ -102,10 +104,26 @@ namespace backend.Service
                 durationSeconds);
         }
 
-        public async Task<IEnumerable<TicketDTOs.TicketMediaResponse>> GetMediaByTicketIdAsync(
-            int ticketId)
+        public async Task<IEnumerable<TicketDTOs.TicketMediaResponse>> GetMediaByTicketIdAsync(int ticketId)
         {
-            return await _ticketRepository.GetMediaByTicketIdAsync(ticketId);
+            var mediaList = await _ticketRepository.GetMediaByTicketIdAsync(ticketId);
+
+            var request = _httpContextAccessor.HttpContext?.Request;
+
+            var baseUrl = $"{request?.Scheme}://{request?.Host}";
+
+            return mediaList.Select(m => new TicketDTOs.TicketMediaResponse
+            {
+                TicketMediaId = m.TicketMediaId,
+                TicketId = m.TicketId,
+                FileName = m.FileName,
+                OriginalFileName = m.OriginalFileName,
+                FilePath = $"{baseUrl}/{m.FilePath.Replace("\\", "/")}",
+                MimeType = m.MimeType,
+                FileSize = m.FileSize,
+                DurationSeconds = m.DurationSeconds,
+                UploadedAt = m.UploadedAt
+            });
         }
 
         public async Task<TicketDTOs.DeleteMediaResponse> DeleteMediaAsync(TicketDTOs.DeleteMediaRequest request)
