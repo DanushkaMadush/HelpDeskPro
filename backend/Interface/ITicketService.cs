@@ -12,7 +12,7 @@ namespace backend.Interface
         Task<TicketDTOs.UpdateTicketStatusResponse> UpdateTicketStatusAsync(TicketDTOs.UpdateTicketStatusRequest request);
         Task<TicketDTOs.SoftDeleteTicketResponse> SoftDeleteTicketAsync(TicketDTOs.SoftDeleteTicketRequest request);
         Task<TicketDTOs.UpdateTicketDetailsResponse> UpdateTicketDetailsAsync(TicketDTOs.UpdateTicketDetailsRequest request);
-        Task<TicketDTOs.UploadMediaResponse> UploadMediaAsync(TicketDTOs.UploadMediaRequest request,
+        Task<TicketDTOs.UploadMediaResponse> UploadMediaAsync(int ticketId, TicketDTOs.UploadMediaRequest request,
             string storedFileName,
             string filePath,
             long fileSize,

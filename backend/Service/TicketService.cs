@@ -83,7 +83,9 @@ namespace backend.Service
             return await _ticketRepository.UpdateDetailsAsync(request);
         }
 
-        public async Task<TicketDTOs.UploadMediaResponse> UploadMediaAsync(TicketDTOs.UploadMediaRequest request,
+        public async Task<TicketDTOs.UploadMediaResponse> UploadMediaAsync(
+            int ticketId,
+            TicketDTOs.UploadMediaRequest request,
             string storedFileName,
             string filePath,
             long fileSize,
@@ -91,6 +93,7 @@ namespace backend.Service
             int? durationSeconds)
         {
             return await _ticketRepository.CreateMediaAsync(
+                ticketId,
                 request,
                 storedFileName,
                 filePath,

@@ -448,7 +448,9 @@ namespace backend.Repository
             };
         }
 
-        public async Task<TicketDTOs.UploadMediaResponse> CreateMediaAsync(TicketDTOs.UploadMediaRequest request,
+        public async Task<TicketDTOs.UploadMediaResponse> CreateMediaAsync(
+            int ticketId,
+            TicketDTOs.UploadMediaRequest request,
             string storedFileName,
             string filePath,
             long fileSize,
@@ -464,7 +466,7 @@ namespace backend.Repository
                     CommandType = CommandType.StoredProcedure
                 };
 
-                command.Parameters.AddWithValue("@TicketId", request.TicketId);
+                command.Parameters.AddWithValue("@TicketId", ticketId);
                 command.Parameters.AddWithValue("@FileName", storedFileName);
                 command.Parameters.AddWithValue("@OriginalFileName", request.File.FileName);
                 command.Parameters.AddWithValue("@FilePath", filePath);

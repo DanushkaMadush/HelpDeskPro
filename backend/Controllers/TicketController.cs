@@ -118,8 +118,6 @@ namespace backend.Controllers
             if (request.File == null || request.File.Length == 0)
                 return BadRequest("No file uploaded.");
 
-            request.TicketId = ticketId;
-
             var uploadsRoot = Path.Combine(
                 _environment.ContentRootPath,
                 "uploads",
@@ -144,6 +142,7 @@ namespace backend.Controllers
             int? durationSeconds = null;
 
             var response = await _ticketService.UploadMediaAsync(
+                ticketId,
                 request,
                 storedFileName,
                 relativePath,

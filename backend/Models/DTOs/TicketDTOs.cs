@@ -102,7 +102,7 @@
 
         public class UploadMediaRequest
         {
-            public int TicketId { get; set; }
+            //public int TicketId { get; set; }
             public IFormFile File { get; set; } = null!;
             public required string UploadedBy { get; set; }
         }
