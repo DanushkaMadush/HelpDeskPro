@@ -135,7 +135,7 @@ namespace backend.Controllers
                 await request.File.CopyToAsync(stream);
             }
 
-            var relativePath = Path.GetRelativePath(_environment.ContentRootPath, filePath);
+            var relativePath = Path.Combine("uploads", "tickets", ticketId.ToString(), storedFileName).Replace("\\", "/");
 
             var mimeType = request.File.ContentType;
             var fileSize = request.File.Length;
