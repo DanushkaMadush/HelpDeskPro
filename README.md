@@ -73,6 +73,59 @@ The companion mobile app lives in a separate repository:
 
 ---
 
+## Realtime Notifications (SignalR)
+
+The backend exposes a SignalR hub at `/notificationHub` for realtime in-app toast notifications.
+
+### How it works
+
+- On connect, each authenticated user is added to a group named `user_{userId}` (where `userId` is the `ClaimTypes.NameIdentifier` from the JWT).
+- The backend emits the event **`ReceiveNotification`** with a `NotificationMessage` payload:
+
+```json
+{
+  "title": "string",
+  "message": "string",
+  "ticketId": 123,
+  "systemId": 456,
+  "statusId": 2,
+  "createdAt": "2024-01-01T00:00:00Z"
+}
+```
+
+**Triggered events:**
+- **Ticket Created** → `ReceiveNotification` sent to all developers assigned to the ticket's system.
+- **Ticket Status Updated** → `ReceiveNotification` sent to the ticket requester (`CreatedBy`).
+
+### Configuring the Hub URL (local dev)
+
+| Setting | Value |
+|---|---|
+| REST API base | `http://<host>:5021/api/v1` |
+| SignalR hub | `http://<host>:5021/notificationHub` |
+
+Replace `<host>` with your machine's LAN IP (e.g. `192.168.8.104`) so the mobile device on the same network can connect.
+
+### Mobile client setup (`HelpDeskPro-Mobile`)
+
+See the [mobile repository](https://github.com/DanushkaMadush/HelpDeskPro-Mobile) for the full Expo/React Native implementation. The key steps are:
+
+1. **Install dependencies:**
+   ```bash
+   npm install @microsoft/signalr react-native-toast-message
+   ```
+2. **Set the hub URL in `src/api/config.ts`:**
+   ```ts
+   export const API_CONFIG = {
+     BASE_URL: 'http://192.168.8.104:5021/api/v1',
+     HUB_URL: 'http://192.168.8.104:5021/notificationHub',
+   };
+   ```
+3. **Create `src/realtime/notificationsHub.ts`** – a module that builds a `HubConnection` using `accessTokenFactory: () => getToken()`, enables automatic reconnect, and subscribes to `ReceiveNotification` to show toast banners.
+4. **Wire the `<Toast />` component** at the root of `app/_layout.tsx` and call `startNotificationHub()` once the user is authenticated (after login) and `stopNotificationHub()` on logout.
+
+---
+
 ## Contributing
 
 1. Create a feature branch

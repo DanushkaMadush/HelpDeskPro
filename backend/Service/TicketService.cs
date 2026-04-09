@@ -42,6 +42,7 @@ namespace backend.Service
             {
                 Title = "New Ticket Created",
                 Message = $"A new ticket was created for system ID {request.SystemId}.",
+                TicketId = result.Ticket?.TicketId,
                 SystemId = request.SystemId
             };
 
@@ -72,7 +73,30 @@ namespace backend.Service
 
         public async Task<TicketDTOs.UpdateTicketStatusResponse> UpdateTicketStatusAsync(TicketDTOs.UpdateTicketStatusRequest request)
         {
-            return await _ticketRepository.UpdateStatusAsync(request);
+            var result = await _ticketRepository.UpdateStatusAsync(request);
+
+            if (!string.IsNullOrEmpty(result.ErrorMessage))
+                return result;
+
+            var ticket = await _ticketRepository.GetByIdAsync(new TicketDTOs.GetTicketByIdRequest
+            {
+                TicketId = request.TicketId
+            });
+
+            if (ticket != null && !string.IsNullOrEmpty(ticket.CreatedBy))
+            {
+                var notification = new NotificationDTOs.NotificationMessage
+                {
+                    Title = "Ticket Status Updated",
+                    Message = $"Your ticket #{request.TicketId} status has been updated to \"{ticket.Status ?? request.StatusId.ToString()}\".",
+                    TicketId = request.TicketId,
+                    StatusId = request.StatusId
+                };
+
+                await _notificationService.NotifyUserAsync(ticket.CreatedBy, notification);
+            }
+
+            return result;
         }
 
         public async Task<TicketDTOs.SoftDeleteTicketResponse> SoftDeleteTicketAsync(TicketDTOs.SoftDeleteTicketRequest request)

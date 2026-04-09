@@ -8,6 +8,7 @@
             public string Message { get; set; } = null!;
             public int? TicketId { get; set; }
             public int? SystemId { get; set; }
+            public int? StatusId { get; set; }
             public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         }
 
