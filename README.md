@@ -121,7 +121,7 @@ See the [mobile repository](https://github.com/DanushkaMadush/HelpDeskPro-Mobile
      HUB_URL: 'http://192.168.8.104:5021/notificationHub',
    };
    ```
-3. **Create `src/realtime/notificationsHub.ts`** – a module that builds a `HubConnection` using `accessTokenFactory: () => getToken()`, enables automatic reconnect, and subscribes to `ReceiveNotification` to show toast banners.
+3. **Create `src/realtime/notificationClient.ts`** – a module that builds a `HubConnection` using `accessTokenFactory: () => getToken()`, enables automatic reconnect, and subscribes to `ReceiveNotification` to show toast banners.
 4. **Wire the `<Toast />` component** at the root of `app/_layout.tsx` and call `startNotificationHub()` once the user is authenticated (after login) and `stopNotificationHub()` on logout.
 
 ---

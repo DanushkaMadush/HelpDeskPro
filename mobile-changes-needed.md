@@ -1,153 +1,98 @@
-# Mobile App Changes Required
+# HelpDeskPro-Mobile – Realtime Notifications Implementation Guide
 
-**Target repo:** `DanushkaMadush/HelpDeskPro-Mobile`
+**Target repository:** `DanushkaMadush/HelpDeskPro-Mobile`  
 **Target branch:** `copilot/featurerealtime-notifications`
 
-## Status of each file
-
-| File | Status |
-|------|--------|
-| `package.json` | ✅ Already has `@microsoft/signalr` (^10.0.0) and `react-native-toast-message` (^2.3.3) |
-| `src/api/config.ts` | ✅ Already has `HUB_URL` |
-| `src/realtime/notificationsHub.ts` | ❌ Missing — create this file |
-| `app/_layout.tsx` | ⚠️ Needs update — currently uses `useNotificationHub` hook instead of direct `startNotificationHub` call |
+> The branch already contains most of the required changes. This document lists what is implemented and what still needs to be done.
 
 ---
 
-## File: src/realtime/notificationsHub.ts
+## Already implemented on branch `copilot/featurerealtime-notifications`
 
-**Action:** Create new file
+| File | What was added |
+|------|---------------|
+| `package.json` | `@microsoft/signalr` and `react-native-toast-message` dependencies |
+| `src/api/config.ts` | `HUB_URL: 'http://192.168.8.104:5021/notificationHub'` |
+| `src/realtime/notificationClient.ts` | Singleton `HubConnection` factory; subscribes to `ReceiveNotification` → `Toast.show()`; exports `startNotificationConnection` / `stopNotificationConnection` |
+| `src/hooks/useNotificationHub.ts` | React hook that starts the hub on mount (if a token is present) and stops it on unmount |
+| `app/_layout.tsx` | Mounts `<NotificationProvider>` (calls `useNotificationHub`) and renders `<Toast />` at the root |
+
+---
+
+## Remaining change: start connection after login
+
+The `useNotificationHub` hook only runs once when `_layout.tsx` mounts. If the user is already logged in when the app starts, the connection starts automatically. However, **when a user logs in for the first time in a session** (no token in storage yet), the hook has already run and will not reconnect.
+
+### Fix: update `app/(auth)/login.tsx`
+
+After `saveToken(response.token)` succeeds, call `startNotificationConnection()` so the hub starts immediately after login without requiring an app restart.
+
+```tsx
+// At the top of login.tsx, add:
+import { startNotificationConnection } from '@/src/realtime/notificationClient';
+
+// Inside handleLogin, after await saveToken(response.token):
+await startNotificationConnection();
+```
+
+Full updated `handleLogin`:
+
+```tsx
+const handleLogin = async () => {
+  if (!email || !password) {
+    Alert.alert('Error', 'Please enter both email and password');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const response = await login({ email, password });
+    await saveToken(response.token);
+    await startNotificationConnection();          // <-- add this line
+
+    const decoded = decodeToken(response.token);
+    const role =
+      decoded?.[
+        'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
+      ]?.toLowerCase();
+
+    if (role === 'developer') {
+      router.replace('/(tabs)/home-developer');
+    } else {
+      router.replace('/(tabs)/home-user');
+    }
+  } catch (error: any) {
+    // ... existing error handling unchanged
+  } finally {
+    setLoading(false);
+  }
+};
+```
+
+---
+
+## Optional: update `NotificationMessage` type in `notificationClient.ts`
+
+The backend now sends `ticketId` and `statusId` in the payload. Add these optional fields to the type for future use (e.g. tapping a toast to navigate to the ticket):
 
 ```ts
-import * as signalR from '@microsoft/signalr';
-import Toast from 'react-native-toast-message';
-import { API_CONFIG } from '../api/config';
-import { getToken } from '../utils/tokenStorage';
-
 export type NotificationMessage = {
   title: string;
   message: string;
   ticketId?: number;
   systemId?: number;
   statusId?: number;
-  createdAt: string;
+  createdAt?: string;
 };
-
-let connection: signalR.HubConnection | null = null;
-
-export function getNotificationHubConnection(): signalR.HubConnection {
-  if (!connection) {
-    connection = new signalR.HubConnectionBuilder()
-      .withUrl(API_CONFIG.HUB_URL, {
-        accessTokenFactory: () => getToken().then((t) => t ?? ''),
-      })
-      .withAutomaticReconnect()
-      .configureLogging(signalR.LogLevel.Warning)
-      .build();
-
-    connection.on('ReceiveNotification', (payload: NotificationMessage) => {
-      Toast.show({
-        type: 'info',
-        text1: payload.title,
-        text2: payload.message,
-        visibilityTime: 4000,
-        position: 'top',
-      });
-    });
-  }
-  return connection;
-}
-
-export async function startNotificationHub(): Promise<void> {
-  const conn = getNotificationHubConnection();
-  if (
-    conn.state === signalR.HubConnectionState.Disconnected
-  ) {
-    try {
-      await conn.start();
-    } catch (err) {
-      console.warn('[SignalR] Failed to start connection:', err);
-    }
-  }
-}
-
-export async function stopNotificationHub(): Promise<void> {
-  if (
-    connection &&
-    connection.state !== signalR.HubConnectionState.Disconnected
-  ) {
-    try {
-      await connection.stop();
-    } catch (err) {
-      console.warn('[SignalR] Failed to stop connection:', err);
-    }
-  }
-}
 ```
 
 ---
 
-## File: app/_layout.tsx
+## How to run locally
 
-**Action:** Replace entire file content
-
-```tsx
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import Toast from 'react-native-toast-message';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { startNotificationHub, stopNotificationHub } from '@/src/realtime/notificationsHub';
-import { getToken } from '@/src/utils/tokenStorage';
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
-  useEffect(() => {
-    let mounted = true;
-
-    (async () => {
-      const token = await getToken();
-      if (mounted && token) {
-        await startNotificationHub();
-      }
-    })();
-
-    return () => {
-      mounted = false;
-      stopNotificationHub();
-    };
-  }, []);
-
-  return (
-    <SafeAreaProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen
-            name="modal"
-            options={{ presentation: 'modal', title: 'Modal' }}
-          />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-      <Toast />
-    </SafeAreaProvider>
-  );
-}
-```
-
----
-
-## Notes
-
-- `src/hooks/useNotificationHub.ts` and `src/realtime/notificationClient.ts` can be kept
-  (they are not imported by the updated `_layout.tsx`) or deleted as cleanup.
-- The `NotificationMessage` type in `notificationsHub.ts` is the full payload shape
-  from the backend (`ticketId`, `systemId`, `statusId`, `createdAt`) and supersedes
-  the narrower type in `notificationClient.ts`.
+1. Ensure the backend is running on `http://192.168.8.104:5021` (or update `HUB_URL` in `src/api/config.ts` to match your machine's LAN IP).
+2. Install dependencies: `npm install`
+3. Start the app: `npx expo start`
+4. Log in → you should see realtime toast banners when:
+   - A ticket is created for a system you are assigned to (developer role)
+   - The status of a ticket you created is updated (requester role)

@@ -88,7 +88,9 @@ namespace backend.Service
                 var notification = new NotificationDTOs.NotificationMessage
                 {
                     Title = "Ticket Status Updated",
-                    Message = $"Your ticket #{request.TicketId} status has been updated to \"{ticket.Status ?? request.StatusId.ToString()}\".",
+                    Message = !string.IsNullOrEmpty(ticket.Status)
+                        ? $"Your ticket #{request.TicketId} status has been updated to \"{ticket.Status}\"."
+                        : $"Your ticket #{request.TicketId} status has been updated.",
                     TicketId = request.TicketId,
                     StatusId = request.StatusId
                 };
