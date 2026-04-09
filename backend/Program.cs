@@ -118,7 +118,7 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.MapControllers();
 app.MapHub<NotificationHub>("/notificationHub");
 app.Run();

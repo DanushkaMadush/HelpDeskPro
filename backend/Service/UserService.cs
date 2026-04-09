@@ -54,9 +54,11 @@ namespace backend.Service
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email!),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim("userId", user.Id),
-                new Claim("plant", user.Plant)
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim("email", user.Email!),
+                new Claim("plant", user.Plant ?? "")
             };
 
             foreach (var role in roles)
