@@ -3,26 +3,63 @@ import { colors } from "../theme/colors";
 import PrimaryButton from "../components/PrimaryButton";
 import SecondaryButton from "../components/SecondaryButton";
 import TertiaryButton from "../components/TertiaryButton";
+import { login } from "../api/auth.api";
+import { saveToken } from "../utils/tokenStorage";
+import toast from "react-hot-toast";
+import { getUserRole } from "../utils/jwt.service";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      alert("Please enter email and password");
+const handleLogin = async () => {
+  if (!email || !password) {
+    toast.error("Please enter email and password");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await login({ email, password });
+
+    saveToken(response.token);
+
+    const role = await getUserRole();
+
+    if (!role) {
+      toast.error("Role not found");
       return;
     }
 
-    setLoading(true);
+    if (role === "manager") {
+      navigate("/dashboard");
+    } else if (role === "admin") {
+      navigate("/admin");
+    } else {
+      toast.error("Unauthorized role");
+    }
 
-    // API integration later
-    setTimeout(() => {
-      setLoading(false);
-      alert("Login clicked");
-    }, 1000);
-  };
+    toast.success("Login successful!");
+  } catch (error: any) {
+    let message = "Login failed";
+
+    if (!error.response) {
+      message = "Network error";
+    } else if (error.response.status === 401) {
+      message = "Invalid email or password";
+    } else if (error.response.data?.message) {
+      message = error.response.data.message;
+    }
+
+    toast.error(message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div
