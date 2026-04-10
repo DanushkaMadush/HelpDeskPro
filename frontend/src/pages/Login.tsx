@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { colors } from "../theme/colors";
+import PrimaryButton from "../components/PrimaryButton";
+import SecondaryButton from "../components/SecondaryButton";
+import TertiaryButton from "../components/TertiaryButton";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -30,29 +33,16 @@ export default function Login() {
         className="w-full max-w-md p-8 rounded-2xl shadow-lg"
         style={{ backgroundColor: colors.card }}
       >
-        {/* Logo */}
         <div className="flex justify-center mb-6">
           <img
-            src="/HelpDeskProLogo.jpg" // <-- place your logo in public folder
+            src="/HelpDeskProLogo.jpg"
             alt="HelpDeskPro Logo"
             className="w-32 h-32 object-contain"
           />
         </div>
 
-        {/* Title */}
-        <h2
-          className="text-2xl font-semibold text-center mb-6"
-          style={{ color: colors.text }}
-        >
-          Login to HelpDeskPro
-        </h2>
-
-        {/* Email */}
         <div className="mb-4">
-          <label
-            className="block mb-1 text-sm"
-            style={{ color: colors.text }}
-          >
+          <label className="block mb-1 text-sm" style={{ color: colors.text }}>
             Email
           </label>
           <input
@@ -69,12 +59,8 @@ export default function Login() {
           />
         </div>
 
-        {/* Password */}
         <div className="mb-6">
-          <label
-            className="block mb-1 text-sm"
-            style={{ color: colors.text }}
-          >
+          <label className="block mb-1 text-sm" style={{ color: colors.text }}>
             Password
           </label>
           <input
@@ -91,35 +77,20 @@ export default function Login() {
           />
         </div>
 
-        {/* Login Button */}
-        <button
+        <PrimaryButton
+          title={loading ? "Logging in..." : "Login"}
           onClick={handleLogin}
           disabled={loading}
-          className="w-full py-3 rounded-lg font-semibold transition"
-          style={{
-            backgroundColor: colors.primary,
-            color: "#fff",
-            opacity: loading ? 0.7 : 1,
-          }}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+        />
 
-        {/* Extra Actions */}
-        <div className="mt-4 flex justify-between text-sm">
-          <button
-            className="hover:underline"
-            style={{ color: colors.secondary }}
-          >
-            Signup
-          </button>
+        <div className="h-3" />
 
-          <button
-            className="hover:underline"
-            style={{ color: colors.secondary }}
-          >
-            Forgot password?
-          </button>
+        <SecondaryButton title="Signup" onClick={() => {}} />
+
+        <div className="h-3" />
+
+        <div className="flex justify-center">
+          <TertiaryButton title="Forgot password?" onClick={() => {}} />
         </div>
       </div>
     </div>
