@@ -1,6 +1,6 @@
 export default function AdminHome() {
   return (
-    <div className="p-6 text-white">
+    <div className="p-6">
       <h1>Admin</h1>
     </div>
   );
