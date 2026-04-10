@@ -2,9 +2,21 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import { Toaster } from "react-hot-toast";
+import { colors } from "./theme/colors";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+    <Toaster
+      position="top-center"
+      toastOptions={{
+        style: {
+          background: colors.card,
+          color: colors.text,
+          border: `1px solid ${colors.border}`,
+        },
+      }}
+    ></Toaster>
+  </React.StrictMode>,
 );
