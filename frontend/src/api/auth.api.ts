@@ -34,7 +34,7 @@ export const login = async (
   payload: LoginRequest
 ): Promise<LoginResponse> => {
   const response = await apiClient.post<LoginResponse>(
-    "v1/users/login",
+    "/users/login",
     payload
   );
 
