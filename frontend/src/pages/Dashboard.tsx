@@ -97,168 +97,149 @@ export default function Dashboard() {
       className="p-6 min-h-screen space-y-6"
       style={{ backgroundColor: colors.background, color: colors.text }}
     >
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p style={{ color: colors.text }}>
+            Overview of system performance and ticket activity
+          </p>
+        </div>
+      </div>
 
-      {/*  KPI CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {/* Total */}
-        <div
-          className="rounded-2xl p-4 shadow"
-          style={{ backgroundColor: colors.card }}
-        >
-          <p style={{ color: colors.text }}>Total Tickets</p>
-          <h2 className="text-xl font-bold" style={{ color: colors.primary }}>
-            {kpi?.totalTickets}
-          </h2>
-        </div>
-
-        {/* Pending */}
-        <div
-          className="rounded-2xl p-4 shadow"
-          style={{ backgroundColor: colors.card }}
-        >
-          <p style={{ color: colors.text }}>Pending</p>
-          <h2
-            className="text-xl font-bold"
-            style={{ color: colors.statusOpen }}
+        {[
+          {
+            label: "Total Tickets",
+            value: kpi?.totalTickets,
+            color: colors.primary,
+          },
+          {
+            label: "Pending",
+            value: kpi?.pendingTickets,
+            color: colors.statusOpen,
+          },
+          {
+            label: "Ongoing",
+            value: kpi?.ongoingTickets,
+            color: colors.statusInProgress,
+          },
+          {
+            label: "Completed",
+            value: kpi?.completedTickets,
+            color: colors.statusResolved,
+          },
+          {
+            label: "Avg Resolution (hrs)",
+            value: avgTime.toFixed(1),
+            color: colors.secondary,
+          },
+        ].map((card, index) => (
+          <div
+            key={index}
+            className="rounded-2xl p-5 transition-all duration-300"
+            style={{
+              backgroundColor: colors.card,
+              border: `1px solid ${colors.border}`,
+            }}
           >
-            {kpi?.pendingTickets}
-          </h2>
-        </div>
+            <p style={{ color: colors.text }} className="text-lg">
+              {card.label}
+            </p>
 
-        {/* Ongoing */}
-        <div
-          className="rounded-2xl p-4 shadow"
-          style={{ backgroundColor: colors.card }}
-        >
-          <p style={{ color: colors.text }}>Ongoing</p>
-          <h2
-            className="text-xl font-bold"
-            style={{ color: colors.statusInProgress }}
-          >
-            {kpi?.ongoingTickets}
-          </h2>
-        </div>
-
-        {/* Completed */}
-        <div
-          className="rounded-2xl p-4 shadow"
-          style={{ backgroundColor: colors.card }}
-        >
-          <p style={{ color: colors.text }}>Completed</p>
-          <h2
-            className="text-xl font-bold"
-            style={{ color: colors.statusResolved }}
-          >
-            {kpi?.completedTickets}
-          </h2>
-        </div>
-
-        {/* Avg Time */}
-        <div
-          className="rounded-2xl p-4 shadow"
-          style={{ backgroundColor: colors.card }}
-        >
-          <p style={{ color: colors.text }}>Avg Resolution (hrs)</p>
-          <h2 className="text-xl font-bold" style={{ color: colors.secondary }}>
-            {avgTime.toFixed(1)}
-          </h2>
-        </div>
-      </div>
-      {/*  STATUS CHART */}
-      <div
-        className="rounded-2xl p-4 shadow"
-        style={{
-          backgroundColor: colors.card,
-          border: `1px solid ${colors.border}`,
-        }}
-      >
-        <h2 className="text-lg font-semibold mb-4">Tickets by Status</h2>
-
-        <div className="w-full h-80">
-          <ResponsiveContainer>
-            <PieChart>
-              <Pie
-                data={statusData}
-                dataKey="ticketCount"
-                nameKey="status"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                label
-              >
-                {statusData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={getStatusColor(entry.status)}
-                  />
-                ))}
-              </Pie>
-
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: colors.surface,
-                  border: `1px solid ${colors.border}`,
-                  color: colors.text,
-                }}
-              />
-
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+            <h2
+              className="text-2xl font-bold mt-2"
+              style={{ color: card.color }}
+            >
+              {card.value}
+            </h2>
+          </div>
+        ))}
       </div>
 
-      {/* TICKETS OVER TIME */}
-      <div
-        className="rounded-2xl p-4 shadow"
-        style={{
-          backgroundColor: colors.card,
-          border: `1px solid ${colors.border}`,
-        }}
-      >
-        <h2 className="text-lg font-semibold mb-4">Tickets Over Time</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div
+          className="lg:col-span-2 rounded-2xl p-5"
+          style={{
+            backgroundColor: colors.card,
+            border: `1px solid ${colors.border}`,
+          }}
+        >
+          <h2 className="text-lg font-semibold mb-4">Tickets Over Time</h2>
 
-        <div className="w-full h-80">
-          <ResponsiveContainer>
-            <LineChart data={timeData}>
-              <CartesianGrid stroke={colors.border} strokeDasharray="3 3" />
+          <div className="w-full h-80">
+            <ResponsiveContainer>
+              <LineChart data={timeData}>
+                <CartesianGrid stroke={colors.border} strokeDasharray="3 3" />
 
-              <XAxis
-                dataKey="ticketDate"
-                tickFormatter={formatDate}
-                stroke={colors.text}
-              />
+                <XAxis
+                  dataKey="ticketDate"
+                  tickFormatter={formatDate}
+                  stroke={colors.text}
+                />
 
-              <YAxis stroke={colors.text} />
+                <YAxis stroke={colors.text} />
 
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: colors.surface,
-                  border: `1px solid ${colors.border}`,
-                  color: colors.text,
-                }}
-                labelFormatter={(label) => formatDate(label)}
-              />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: colors.surface,
+                    border: `1px solid ${colors.border}`,
+                    color: colors.text,
+                  }}
+                  labelFormatter={(label) => formatDate(label)}
+                />
 
-              <Line
-                type="monotone"
-                dataKey="ticketCount"
-                stroke={colors.primary}
-                strokeWidth={3}
-                dot={{ r: 4 }}
-                isAnimationActive={true}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+                <Line
+                  type="monotone"
+                  dataKey="ticketCount"
+                  stroke={colors.primary}
+                  strokeWidth={3}
+                  dot={{ r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div
+          className="rounded-2xl p-5"
+          style={{
+            backgroundColor: colors.card,
+            border: `1px solid ${colors.border}`,
+          }}
+        >
+          <h2 className="text-lg font-semibold mb-4">Tickets by Status</h2>
+
+          <div className="w-full h-80">
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie
+                  data={statusData}
+                  dataKey="ticketCount"
+                  nameKey="status"
+                  outerRadius={100}
+                >
+                  {statusData.map((entry, index) => (
+                    <Cell key={index} fill={getStatusColor(entry.status)} />
+                  ))}
+                </Pie>
+
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: colors.surface,
+                    border: `1px solid ${colors.border}`,
+                  }}
+                />
+
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 
-      {/*  BAR CHARTS ROW */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/*  Tickets by System */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div
-          className="rounded-2xl p-4 shadow"
+          className="rounded-2xl p-5"
           style={{
             backgroundColor: colors.card,
             border: `1px solid ${colors.border}`,
@@ -270,18 +251,14 @@ export default function Dashboard() {
             <ResponsiveContainer>
               <BarChart data={systemData}>
                 <CartesianGrid stroke={colors.border} strokeDasharray="3 3" />
-
                 <XAxis dataKey="systemName" stroke={colors.text} />
                 <YAxis stroke={colors.text} />
-
                 <Tooltip
                   contentStyle={{
                     backgroundColor: colors.surface,
                     border: `1px solid ${colors.border}`,
-                    color: colors.text,
                   }}
                 />
-
                 <Bar
                   dataKey="ticketCount"
                   fill={colors.primary}
@@ -292,9 +269,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/*  Tickets by Branch */}
         <div
-          className="rounded-2xl p-4 shadow"
+          className="rounded-2xl p-5"
           style={{
             backgroundColor: colors.card,
             border: `1px solid ${colors.border}`,
@@ -306,18 +282,14 @@ export default function Dashboard() {
             <ResponsiveContainer>
               <BarChart data={branchData}>
                 <CartesianGrid stroke={colors.border} strokeDasharray="3 3" />
-
                 <XAxis dataKey="branchName" stroke={colors.text} />
                 <YAxis stroke={colors.text} />
-
                 <Tooltip
                   contentStyle={{
                     backgroundColor: colors.surface,
                     border: `1px solid ${colors.border}`,
-                    color: colors.text,
                   }}
                 />
-
                 <Bar
                   dataKey="ticketCount"
                   fill={colors.secondary}
