@@ -22,6 +22,16 @@ export interface SystemCreateResponse {
   errorMessage?: string;
 }
 
+export interface SystemAssignRequest {
+  systemId: number;
+  userId: string;
+}
+
+export interface SystemAssignResponse {
+  successMessage?: string;
+  errorMessage?: string;
+}
+
 export const getSystems = async (): Promise<System[]> => {
   try {
     const res = await apiClient.get<System[]>('/systems');
@@ -48,6 +58,16 @@ export const createSystem = async (data: SystemCreateRequest): Promise<SystemCre
     return res.data;
   } catch (error: any) {
     console.error('Create system error:', error);
+    throw error;
+  }
+}
+
+export const assignSystem = async (data: SystemAssignRequest): Promise<SystemAssignResponse> => {
+  try {
+    const res = await apiClient.post<SystemAssignResponse>('/systems/assign', data);
+    return res.data;
+  } catch (error: any) {
+    console.error('User assign error:', error);
     throw error;
   }
 }
