@@ -8,7 +8,7 @@ export type KpiResponse = {
 };
 
 export const getKpi = async (): Promise<KpiResponse> => {
-  const response = await apiClient.get<KpiResponse>("/v1/dashboard/kpi");
+  const response = await apiClient.get<KpiResponse>("/dashboard/kpi");
   return response.data;
 };
 
@@ -19,7 +19,7 @@ export type AvgResolutionResponse = {
 export const getAvgResolutionTime =
   async (): Promise<AvgResolutionResponse> => {
     const response = await apiClient.get<AvgResolutionResponse>(
-      "/v1/dashboard/avg-resolution-time",
+      "/dashboard/avg-resolution-time",
     );
     return response.data;
   };
@@ -31,7 +31,7 @@ export type StatusChartResponse = {
 
 export const getTicketsByStatus = async (): Promise<StatusChartResponse[]> => {
   const response = await apiClient.get<StatusChartResponse[]>(
-    "/v1/dashboard/tickets-by-status",
+    "/dashboard/tickets-by-status",
   );
   return response.data;
 };
@@ -43,7 +43,7 @@ export type TimeSeriesResponse = {
 
 export const getTicketsOverTime = async (): Promise<TimeSeriesResponse[]> => {
   const response = await apiClient.get<TimeSeriesResponse[]>(
-    "/v1/dashboard/tickets-over-time",
+    "/dashboard/tickets-over-time",
   );
   return response.data;
 };
@@ -55,7 +55,7 @@ export type SystemChartResponse = {
 
 export const getTicketsBySystem = async (): Promise<SystemChartResponse[]> => {
   const response = await apiClient.get<SystemChartResponse[]>(
-    "/v1/dashboard/tickets-by-system",
+    "/dashboard/tickets-by-system",
   );
   return response.data;
 };
@@ -67,7 +67,7 @@ export type BranchChartResponse = {
 
 export const getTicketsByBranch = async (): Promise<BranchChartResponse[]> => {
   const response = await apiClient.get<BranchChartResponse[]>(
-    "/v1/dashboard/tickets-by-branch",
+    "/dashboard/tickets-by-branch",
   );
   return response.data;
 };
@@ -81,7 +81,7 @@ export const getTicketsByPriority = async (): Promise<
   PriorityChartResponse[]
 > => {
   const response = await apiClient.get<PriorityChartResponse[]>(
-    "/v1/dashboard/tickets-by-priority",
+    "/dashboard/tickets-by-priority",
   );
   return response.data;
 };
