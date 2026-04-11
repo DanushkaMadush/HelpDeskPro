@@ -12,6 +12,16 @@ export interface SystemByUser {
   systemName: string;
 }
 
+export interface SystemCreateRequest {
+  systemName: string;
+  createdBy: string;
+}
+
+export interface SystemCreateResponse {
+  successMessage?: string;
+  errorMessage?: string;
+}
+
 export const getSystems = async (): Promise<System[]> => {
   try {
     const res = await apiClient.get<System[]>('/systems');
@@ -31,3 +41,13 @@ export const getSystemsByUser = async (userId: string): Promise<SystemByUser[]> 
     throw error;
   }
 };
+
+export const createSystem = async (data: SystemCreateRequest): Promise<SystemCreateResponse> => {
+  try{
+    const res = await apiClient.post<SystemCreateResponse>('/systems', data);
+    return res.data;
+  } catch (error: any) {
+    console.error('Create system error:', error);
+    throw error;
+  }
+}

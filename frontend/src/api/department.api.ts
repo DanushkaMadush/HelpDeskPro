@@ -5,6 +5,14 @@ export interface Department {
   departmentName: string;
 }
 
+export interface DepartmentCreateRequest {
+
+}
+
+export interface DepartmentCreateResponse {
+
+}
+
 export const getDepartments = async (): Promise<Department[]> => {
   try {
     const res = await apiClient.get<Department[]>('/departments');
@@ -14,3 +22,13 @@ export const getDepartments = async (): Promise<Department[]> => {
     throw error;
   }
 };
+
+export const createDepartment = async (): Promise<DepartmentCreateResponse> => {
+  try {
+    const res = await apiClient.post<DepartmentCreateResponse>('/departments');
+    return res.data;
+  } catch (error: any) {
+    console.error('Department create error:', error);
+    throw error;
+  }
+}
