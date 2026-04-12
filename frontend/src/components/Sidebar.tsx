@@ -68,6 +68,16 @@ export default function Sidebar() {
         Branches
       </NavLink>
 
+      <NavLink
+        to="/admin/systems"
+        className={linkClass}
+        style={({ isActive }) => ({
+          color: isActive ? colors.primary : colors.text,
+        })}
+      >
+        Systems
+      </NavLink>
+
     </div>
   );
 }

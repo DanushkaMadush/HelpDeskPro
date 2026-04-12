@@ -6,6 +6,7 @@ import UsersPage from "../pages/admin/UsersPage";
 import RolesPage from "../pages/admin/RolesPage";
 import PermissionsPage from "../pages/admin/PermissionsPage";
 import BranchesPage from "../pages/admin/BranchesPage";
+import SystemsPage from "../pages/admin/SystemsPage";
 
 export default function AppRouter() {
   return (
@@ -18,6 +19,7 @@ export default function AppRouter() {
           <Route path="roles" element={<RolesPage />} />
           <Route path="permissions" element={<PermissionsPage />} />
           <Route path="branches" element={<BranchesPage />} />
+          <Route path="systems" element={<SystemsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
