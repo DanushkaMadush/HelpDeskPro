@@ -38,7 +38,7 @@ const handleLogin = async () => {
     if (role === "manager") {
       navigate("/dashboard");
     } else if (role === "admin") {
-      navigate("/admin");
+      navigate("/admin/users");
     } else {
       toast.error("Unauthorized role");
     }
