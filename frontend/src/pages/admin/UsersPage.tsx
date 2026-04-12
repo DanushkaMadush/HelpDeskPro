@@ -94,28 +94,28 @@ export default function UsersPage() {
   };
 
   const handleAssignSystem = async () => {
-  if (!selectedSystemId) {
-    toast.error("Select a system");
-    return;
-  }
+    if (!selectedSystemId) {
+      toast.error("Select a system");
+      return;
+    }
 
-  if (!selectedUser) return;
+    if (!selectedUser) return;
 
-  try {
-    await assignSystem({
-      systemId: Number(selectedSystemId),
-      userId: selectedUser.id,
-    });
+    try {
+      await assignSystem({
+        systemId: Number(selectedSystemId),
+        userId: selectedUser.id,
+      });
 
-    toast.success("System assigned");
+      toast.success("System assigned");
 
-    setSelectedSystemId("");
-    setOpen(false);
-  } catch (error) {
-    console.error(error);
-    toast.error("Failed to assign system");
-  }
-};
+      setSelectedSystemId("");
+      setOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to assign system");
+    }
+  };
 
   return (
     <div>
@@ -237,30 +237,30 @@ export default function UsersPage() {
           </button>
         </div>
         {/* ASSIGN SYSTEM */}
-<div className="mt-4">
-  <p className="text-sm mb-1">Assign System</p>
+        <div className="mt-4">
+          <p className="text-sm mb-1">Assign System</p>
 
-  <select
-    value={selectedSystemId}
-    onChange={(e) => setSelectedSystemId(e.target.value)}
-    className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
-  >
-    <option value="">Select system</option>
+          <select
+            value={selectedSystemId}
+            onChange={(e) => setSelectedSystemId(e.target.value)}
+            className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
+          >
+            <option value="">Select system</option>
 
-    {systems.map((sys) => (
-      <option key={sys.systemId} value={sys.systemId}>
-        {sys.systemName}
-      </option>
-    ))}
-  </select>
+            {systems.map((sys) => (
+              <option key={sys.systemId} value={sys.systemId}>
+                {sys.systemName}
+              </option>
+            ))}
+          </select>
 
-  <button
-    className="w-full bg-purple-600 p-2 rounded"
-    onClick={handleAssignSystem}
-  >
-    Assign System
-  </button>
-</div>
+          <button
+            className="w-full bg-purple-600 p-2 rounded"
+            onClick={handleAssignSystem}
+          >
+            Assign System
+          </button>
+        </div>
       </Modal>
     </div>
   );
