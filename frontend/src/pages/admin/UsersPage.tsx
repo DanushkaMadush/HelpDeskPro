@@ -1,23 +1,26 @@
 import { useEffect, useState } from "react";
 import { colors } from "../../theme/colors";
-import {
-  getAllUsers,
-  type GetAllUsersResponse,
-} from "../../api/user.api";
+import { getAllUsers, type GetAllUsersResponse } from "../../api/user.api";
 import { assignRole } from "../../api/role.api";
 import Modal from "../../components/Modal";
 import toast from "react-hot-toast";
 import { assignPermissionToUser } from "../../api/permission.api";
+import { assignSystem, getSystems } from "../../api/system.api";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<GetAllUsersResponse[]>([]);
-  const [selectedUser, setSelectedUser] = useState<GetAllUsersResponse | null>(null);
+  const [selectedUser, setSelectedUser] = useState<GetAllUsersResponse | null>(
+    null,
+  );
   const [open, setOpen] = useState(false);
   const [roleName, setRoleName] = useState("");
   const [permissionName, setPermissionName] = useState("");
+  const [systems, setSystems] = useState<any[]>([]);
+  const [selectedSystemId, setSelectedSystemId] = useState("");
 
   useEffect(() => {
     fetchUsers();
+    fetchSystems();
   }, []);
 
   const fetchUsers = async () => {
@@ -27,6 +30,16 @@ export default function UsersPage() {
     } catch (error) {
       console.error(error);
       toast.error("Failed to load users");
+    }
+  };
+
+  const fetchSystems = async () => {
+    try {
+      const data = await getSystems();
+      setSystems(data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load systems");
     }
   };
 
@@ -56,27 +69,51 @@ export default function UsersPage() {
   };
 
   const handleAssignPermission = async () => {
-  if (!permissionName) {
-    toast.error("Enter permission");
+    if (!permissionName) {
+      toast.error("Enter permission");
+      return;
+    }
+
+    if (!selectedUser) return;
+
+    try {
+      await assignPermissionToUser({
+        email: selectedUser.email,
+        permissionName: permissionName,
+      });
+
+      toast.success("Permission assigned");
+
+      setPermissionName("");
+      setOpen(false);
+      fetchUsers();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to assign permission");
+    }
+  };
+
+  const handleAssignSystem = async () => {
+  if (!selectedSystemId) {
+    toast.error("Select a system");
     return;
   }
 
   if (!selectedUser) return;
 
   try {
-    await assignPermissionToUser({
-      email: selectedUser.email,
-      permissionName: permissionName,
+    await assignSystem({
+      systemId: Number(selectedSystemId),
+      userId: selectedUser.id,
     });
 
-    toast.success("Permission assigned");
+    toast.success("System assigned");
 
-    setPermissionName("");
+    setSelectedSystemId("");
     setOpen(false);
-    fetchUsers();
   } catch (error) {
     console.error(error);
-    toast.error("Failed to assign permission");
+    toast.error("Failed to assign system");
   }
 };
 
@@ -132,9 +169,7 @@ export default function UsersPage() {
       >
         <h2 className="text-xl font-bold mb-4">Assign Role</h2>
 
-        <p className="mb-2 text-sm opacity-70">
-          {selectedUser?.email}
-        </p>
+        <p className="mb-2 text-sm opacity-70">{selectedUser?.email}</p>
 
         {/* INPUT */}
         <input
@@ -153,57 +188,80 @@ export default function UsersPage() {
         </button>
       </Modal>
       <Modal
-  isOpen={open}
-  onClose={() => {
-    setOpen(false);
-    setRoleName("");
-    setPermissionName("");
-  }}
->
-  <h2 className="text-xl font-bold mb-4">Manage User</h2>
+        isOpen={open}
+        onClose={() => {
+          setOpen(false);
+          setRoleName("");
+          setPermissionName("");
+        }}
+      >
+        <h2 className="text-xl font-bold mb-4">Manage User</h2>
 
-  <p className="mb-3 text-sm opacity-70">
-    {selectedUser?.email}
-  </p>
+        <p className="mb-3 text-sm opacity-70">{selectedUser?.email}</p>
 
-  {/* ASSIGN ROLE */}
-  <div className="mb-4">
-    <p className="text-sm mb-1">Assign Role</p>
+        {/* ASSIGN ROLE */}
+        <div className="mb-4">
+          <p className="text-sm mb-1">Assign Role</p>
 
-    <input
-      placeholder="admin / manager"
-      value={roleName}
-      onChange={(e) => setRoleName(e.target.value)}
-      className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
-    />
+          <input
+            placeholder="admin / manager"
+            value={roleName}
+            onChange={(e) => setRoleName(e.target.value)}
+            className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
+          />
 
-    <button
-      className="w-full bg-green-600 p-2 rounded"
-      onClick={handleAssignRole}
-    >
-      Assign Role
-    </button>
-  </div>
+          <button
+            className="w-full bg-green-600 p-2 rounded"
+            onClick={handleAssignRole}
+          >
+            Assign Role
+          </button>
+        </div>
 
-  {/* ASSIGN PERMISSION */}
-  <div>
-    <p className="text-sm mb-1">Assign Permission</p>
+        {/* ASSIGN PERMISSION */}
+        <div>
+          <p className="text-sm mb-1">Assign Permission</p>
 
-    <input
-      placeholder="e.g. CREATE_TICKET"
-      value={permissionName}
-      onChange={(e) => setPermissionName(e.target.value)}
-      className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
-    />
+          <input
+            placeholder="e.g. CREATE_TICKET"
+            value={permissionName}
+            onChange={(e) => setPermissionName(e.target.value)}
+            className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
+          />
 
-    <button
-      className="w-full bg-blue-600 p-2 rounded"
-      onClick={handleAssignPermission}
-    >
-      Assign Permission
-    </button>
-  </div>
-</Modal>
+          <button
+            className="w-full bg-blue-600 p-2 rounded"
+            onClick={handleAssignPermission}
+          >
+            Assign Permission
+          </button>
+        </div>
+        {/* ASSIGN SYSTEM */}
+<div className="mt-4">
+  <p className="text-sm mb-1">Assign System</p>
+
+  <select
+    value={selectedSystemId}
+    onChange={(e) => setSelectedSystemId(e.target.value)}
+    className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
+  >
+    <option value="">Select system</option>
+
+    {systems.map((sys) => (
+      <option key={sys.systemId} value={sys.systemId}>
+        {sys.systemName}
+      </option>
+    ))}
+  </select>
+
+  <button
+    className="w-full bg-purple-600 p-2 rounded"
+    onClick={handleAssignSystem}
+  >
+    Assign System
+  </button>
+</div>
+      </Modal>
     </div>
   );
 }
