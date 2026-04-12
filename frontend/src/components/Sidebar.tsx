@@ -47,6 +47,17 @@ export default function Sidebar() {
       >
         Roles
       </NavLink>
+
+      <NavLink
+        to="/admin/permissions"
+        className={linkClass}
+        style={({ isActive }) => ({
+          color: isActive ? colors.primary : colors.text,
+        })}
+      >
+        Permissions
+      </NavLink>
+
     </div>
   );
 }

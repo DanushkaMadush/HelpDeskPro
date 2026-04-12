@@ -4,6 +4,7 @@ import Dashboard from "../pages/Dashboard";
 import AdminLayout from "../pages/AdminLayout";
 import UsersPage from "../pages/admin/UsersPage";
 import RolesPage from "../pages/admin/RolesPage";
+import PermissionsPage from "../pages/admin/PermissionsPage";
 
 export default function AppRouter() {
   return (
@@ -14,6 +15,7 @@ export default function AppRouter() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="users" element={<UsersPage />} />
           <Route path="roles" element={<RolesPage />} />
+          <Route path="permissions" element={<PermissionsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
