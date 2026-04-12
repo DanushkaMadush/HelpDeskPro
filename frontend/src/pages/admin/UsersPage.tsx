@@ -120,6 +120,9 @@ export default function UsersPage() {
     }
   };
 
+  const roles = ["developer", "user", "admin", "manager"];
+  const permissions = ["EditStatus", "GenerateReports"];
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Users</h1>
@@ -196,12 +199,25 @@ export default function UsersPage() {
         {/* ROLE TAB */}
         {activeTab === "role" && (
           <div>
-            <input
+            {/* <input
               placeholder="admin / manager"
               value={roleName}
               onChange={(e) => setRoleName(e.target.value)}
               className="w-full p-2 mb-3 rounded bg-gray-800 text-white"
-            />
+            /> */}
+
+            <select
+              value={roleName}
+              onChange={(e) => setRoleName(e.target.value)}
+              className="w-full p-2 mb-3 rounded bg-gray-800 text-white"
+            >
+              <option value="">Select role</option>
+              {roles.map((role) => (
+                <option key={role} value={role}>
+                  {role}
+                </option>
+              ))}
+            </select>
 
             <button
               className="w-full bg-green-600 p-2 rounded"
@@ -215,12 +231,25 @@ export default function UsersPage() {
         {/* PERMISSION TAB */}
         {activeTab === "permission" && (
           <div>
-            <input
+            {/* <input
               placeholder="CREATE_TICKET"
               value={permissionName}
               onChange={(e) => setPermissionName(e.target.value)}
               className="w-full p-2 mb-3 rounded bg-gray-800 text-white"
-            />
+            /> */}
+
+            <select
+              value={permissionName}
+              onChange={(e) => setPermissionName(e.target.value)}
+              className="w-full p-2 mb-3 rounded bg-gray-800 text-white"
+            >
+              <option value="">Select permission</option>
+              {permissions.map((perm) => (
+                <option key={perm} value={perm}>
+                  {perm}
+                </option>
+              ))}
+            </select>
 
             <button
               className="w-full bg-blue-600 p-2 rounded"
