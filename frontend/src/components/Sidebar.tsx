@@ -7,7 +7,9 @@ export default function Sidebar() {
 
   return (
     <div className="w-64 p-4" style={{ backgroundColor: colors.surface }}>
-      <h2 className="text-xl font-bold mb-6" style={{ color: colors.text }}>Admin Panel</h2>
+      <h2 className="text-xl font-bold mb-6" style={{ color: colors.text }}>
+        Admin Panel
+      </h2>
 
       <NavLink
         to="/dashboard"
@@ -19,7 +21,12 @@ export default function Sidebar() {
         Dashboard
       </NavLink>
 
-      <p className="mt-4 mb-2 text-sm opacity-70" style={{ color: colors.text }}>User Management</p>
+      <p
+        className="mt-4 mb-2 text-sm opacity-70"
+        style={{ color: colors.text }}
+      >
+        User Management
+      </p>
 
       <NavLink
         to="/admin/users"
@@ -31,7 +38,15 @@ export default function Sidebar() {
         Users
       </NavLink>
 
-      {/* Add more later */}
+      <NavLink
+        to="/admin/roles"
+        className={linkClass}
+        style={({ isActive }) => ({
+          color: isActive ? colors.primary : colors.text,
+        })}
+      >
+        Roles
+      </NavLink>
     </div>
   );
 }
