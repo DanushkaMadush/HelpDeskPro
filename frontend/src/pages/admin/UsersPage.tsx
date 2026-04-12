@@ -17,6 +17,9 @@ export default function UsersPage() {
   const [permissionName, setPermissionName] = useState("");
   const [systems, setSystems] = useState<any[]>([]);
   const [selectedSystemId, setSelectedSystemId] = useState("");
+  const [activeTab, setActiveTab] = useState<"role" | "permission" | "system">(
+    "role",
+  );
 
   useEffect(() => {
     fetchUsers();
@@ -159,108 +162,100 @@ export default function UsersPage() {
         </table>
       </div>
 
-      {/* MODAL */}
-      <Modal
-        isOpen={open}
-        onClose={() => {
-          setOpen(false);
-          setRoleName("");
-        }}
-      >
-        <h2 className="text-xl font-bold mb-4">Assign Role</h2>
-
-        <p className="mb-2 text-sm opacity-70">{selectedUser?.email}</p>
-
-        {/* INPUT */}
-        <input
-          placeholder="Enter role (admin / manager)"
-          value={roleName}
-          onChange={(e) => setRoleName(e.target.value)}
-          className="w-full p-2 mb-3 rounded bg-gray-800 text-white"
-        />
-
-        {/* BUTTON */}
-        <button
-          className="w-full bg-green-600 p-2 rounded hover:bg-green-700 transition"
-          onClick={handleAssignRole}
-        >
-          Assign Role
-        </button>
-      </Modal>
       <Modal
         isOpen={open}
         onClose={() => {
           setOpen(false);
           setRoleName("");
           setPermissionName("");
+          setSelectedSystemId("");
+          setActiveTab("role");
         }}
       >
         <h2 className="text-xl font-bold mb-4">Manage User</h2>
 
-        <p className="mb-3 text-sm opacity-70">{selectedUser?.email}</p>
+        <p className="mb-4 text-sm opacity-70">{selectedUser?.email}</p>
 
-        {/* ASSIGN ROLE */}
-        <div className="mb-4">
-          <p className="text-sm mb-1">Assign Role</p>
-
-          <input
-            placeholder="admin / manager"
-            value={roleName}
-            onChange={(e) => setRoleName(e.target.value)}
-            className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
-          />
-
-          <button
-            className="w-full bg-green-600 p-2 rounded"
-            onClick={handleAssignRole}
-          >
-            Assign Role
-          </button>
+        {/* TABS */}
+        <div className="flex mb-4 border-b border-gray-600">
+          {["role", "permission", "system"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab as any)}
+              className={`flex-1 p-2 text-sm ${
+                activeTab === tab
+                  ? "border-b-2 border-green-500 font-semibold"
+                  : ""
+              }`}
+            >
+              {tab.toUpperCase()}
+            </button>
+          ))}
         </div>
 
-        {/* ASSIGN PERMISSION */}
-        <div>
-          <p className="text-sm mb-1">Assign Permission</p>
+        {/* ROLE TAB */}
+        {activeTab === "role" && (
+          <div>
+            <input
+              placeholder="admin / manager"
+              value={roleName}
+              onChange={(e) => setRoleName(e.target.value)}
+              className="w-full p-2 mb-3 rounded bg-gray-800 text-white"
+            />
 
-          <input
-            placeholder="e.g. CREATE_TICKET"
-            value={permissionName}
-            onChange={(e) => setPermissionName(e.target.value)}
-            className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
-          />
+            <button
+              className="w-full bg-green-600 p-2 rounded"
+              onClick={handleAssignRole}
+            >
+              Assign Role
+            </button>
+          </div>
+        )}
 
-          <button
-            className="w-full bg-blue-600 p-2 rounded"
-            onClick={handleAssignPermission}
-          >
-            Assign Permission
-          </button>
-        </div>
-        {/* ASSIGN SYSTEM */}
-        <div className="mt-4">
-          <p className="text-sm mb-1">Assign System</p>
+        {/* PERMISSION TAB */}
+        {activeTab === "permission" && (
+          <div>
+            <input
+              placeholder="CREATE_TICKET"
+              value={permissionName}
+              onChange={(e) => setPermissionName(e.target.value)}
+              className="w-full p-2 mb-3 rounded bg-gray-800 text-white"
+            />
 
-          <select
-            value={selectedSystemId}
-            onChange={(e) => setSelectedSystemId(e.target.value)}
-            className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
-          >
-            <option value="">Select system</option>
+            <button
+              className="w-full bg-blue-600 p-2 rounded"
+              onClick={handleAssignPermission}
+            >
+              Assign Permission
+            </button>
+          </div>
+        )}
 
-            {systems.map((sys) => (
-              <option key={sys.systemId} value={sys.systemId}>
-                {sys.systemName}
-              </option>
-            ))}
-          </select>
+        {/* SYSTEM TAB */}
+        {activeTab === "system" && (
+          <div>
+            <select
+              value={selectedSystemId}
+              onChange={(e) => setSelectedSystemId(e.target.value)}
+              className="w-full p-2 mb-3 rounded bg-gray-800 text-white"
+            >
+              <option value="">Select system</option>
 
-          <button
-            className="w-full bg-purple-600 p-2 rounded"
-            onClick={handleAssignSystem}
-          >
-            Assign System
-          </button>
-        </div>
+              {systems.map((sys) => (
+                <option key={sys.systemId} value={sys.systemId}>
+                  {sys.systemName}
+                </option>
+              ))}
+            </select>
+
+            <button
+              className="w-full bg-purple-600 p-2 rounded"
+              onClick={handleAssignSystem}
+            >
+              Assign System
+            </button>
+          </div>
+        )}
       </Modal>
     </div>
   );
