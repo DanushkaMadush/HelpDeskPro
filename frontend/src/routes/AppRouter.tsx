@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
-import AdminHome from "../pages/AdminHome";
+import AdminLayout from "../pages/AdminLayout";
+import UsersPage from "../pages/admin/UsersPage";
 
 export default function AppRouter() {
   return (
@@ -9,7 +10,9 @@ export default function AppRouter() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/admin" element={<AdminHome />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="users" element={<UsersPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
