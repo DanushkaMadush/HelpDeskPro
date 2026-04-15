@@ -6,7 +6,6 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("api/v1/systems")]
-
     public class SystemController : ControllerBase
     {
         private readonly ISystemService _service;
@@ -17,52 +16,123 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(SystemDTOs.SystemCreateRequest request)
+        public async Task<IActionResult> Create([FromBody] SystemDTOs.SystemCreateRequest request)
         {
-            var result = await _service.CreateSystemAsync(request);
+            try
+            {
+                if (request == null)
+                    return BadRequest(new { Message = "Invalid request body." });
 
-            if (!string.IsNullOrEmpty(result.ErrorMessage))
-                return BadRequest(result);
+                var result = await _service.CreateSystemAsync(request);
 
-            return Ok(result);
+                if (!string.IsNullOrEmpty(result.ErrorMessage))
+                    return BadRequest(result);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "An error occurred while creating system.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var systems = await _service.GetAllSystemsAsync();
-            return Ok(systems);
+            try
+            {
+                var systems = await _service.GetAllSystemsAsync();
+                return Ok(systems);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Failed to retrieve systems.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpGet("by-user/{userId}")]
         public async Task<IActionResult> GetSystemsByUserIdAsync(string userId)
         {
-            var systems = await _service.GetSystemsByUserIdAsync(new SystemDTOs.GetSystemsByUserIdRequest
+            try
             {
-                UserId = userId
-            });
-            return Ok(systems);
+                if (string.IsNullOrEmpty(userId))
+                    return BadRequest(new { Message = "UserId is required." });
+
+                var systems = await _service.GetSystemsByUserIdAsync(
+                    new SystemDTOs.GetSystemsByUserIdRequest
+                    {
+                        UserId = userId
+                    });
+
+                return Ok(systems);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error retrieving systems by user.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpGet("users-by-system/{systemId:int}")]
         public async Task<IActionResult> GetUsersBySystemIdAsync(int systemId)
         {
-            var users = await _service.GetUsersBySystemIdAsync(new SystemDTOs.GetUsersBySystemIdRequest
+            try
             {
-                SystemId = systemId
-            });
-            return Ok(users);
+                if (systemId <= 0)
+                    return BadRequest(new { Message = "Invalid systemId." });
+
+                var users = await _service.GetUsersBySystemIdAsync(
+                    new SystemDTOs.GetUsersBySystemIdRequest
+                    {
+                        SystemId = systemId
+                    });
+
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error retrieving users by system.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpPost("assign")]
-        public async Task<IActionResult> AssignSystemsToDevelopersAsync(SystemDTOs.SystemAssignRequest request)
+        public async Task<IActionResult> AssignSystemsToDevelopersAsync([FromBody] SystemDTOs.SystemAssignRequest request)
         {
-            var result = await _service.AssignSystemsToDevelopersAsync(request);
+            try
+            {
+                if (request == null)
+                    return BadRequest(new { Message = "Invalid request body." });
 
-            if (!string.IsNullOrEmpty(result.ErrorMessage))
-                return BadRequest(result);
+                var result = await _service.AssignSystemsToDevelopersAsync(request);
 
-            return Ok(result);
+                if (!string.IsNullOrEmpty(result.ErrorMessage))
+                    return BadRequest(result);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error assigning systems to developers.",
+                    Error = ex.Message
+                });
+            }
         }
     }
 }

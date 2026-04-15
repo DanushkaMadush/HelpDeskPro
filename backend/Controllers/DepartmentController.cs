@@ -6,7 +6,6 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("api/v1/departments")]
-
     public class DepartmentController : ControllerBase
     {
         private readonly IDepartmentService _service;
@@ -17,21 +16,46 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(DepartmentDTOs.DepartmentCreateRequest request)
+        public async Task<IActionResult> Create([FromBody] DepartmentDTOs.DepartmentCreateRequest request)
         {
-            var result = await _service.CreateDepartmentAsync(request);
+            try
+            {
+                if (request == null)
+                    return BadRequest(new { Message = "Invalid request body." });
 
-            if (!string.IsNullOrEmpty(result.ErrorMessage))
-                return BadRequest(result);
+                var result = await _service.CreateDepartmentAsync(request);
 
-            return Ok(result);
+                if (!string.IsNullOrEmpty(result.ErrorMessage))
+                    return BadRequest(result);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "An error occurred while creating department.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var departments = await _service.GetAllDepartmentsAsync();
-            return Ok(departments);
+            try
+            {
+                var departments = await _service.GetAllDepartmentsAsync();
+                return Ok(departments);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Failed to retrieve departments.",
+                    Error = ex.Message
+                });
+            }
         }
     }
 }

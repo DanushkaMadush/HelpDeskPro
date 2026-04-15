@@ -17,50 +17,127 @@ namespace backend.Controllers
         [HttpGet("kpi")]
         public async Task<IActionResult> GetKpi()
         {
-            var result = await _service.GetKpiAsync();
-            return Ok(result);
+            try
+            {
+                var result = await _service.GetKpiAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error retrieving KPI data.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpGet("tickets-by-status")]
         public async Task<IActionResult> GetTicketsByStatus()
         {
-            var result = await _service.GetTicketsByStatusAsync();
-            return Ok(result);
+            try
+            {
+                var result = await _service.GetTicketsByStatusAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error retrieving tickets by status.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpGet("tickets-over-time")]
         public async Task<IActionResult> GetTicketsOverTime()
         {
-            var result = await _service.GetTicketsOverTimeAsync();
-            return Ok(result);
+            try
+            {
+                var result = await _service.GetTicketsOverTimeAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error retrieving tickets over time.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpGet("tickets-by-system")]
         public async Task<IActionResult> GetTicketsBySystem()
         {
-            var result = await _service.GetTicketsBySystemAsync();
-            return Ok(result);
+            try
+            {
+                var result = await _service.GetTicketsBySystemAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error retrieving tickets by system.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpGet("tickets-by-branch")]
         public async Task<IActionResult> GetTicketsByBranch()
         {
-            var result = await _service.GetTicketsByBranchAsync();
-            return Ok(result);
+            try
+            {
+                var result = await _service.GetTicketsByBranchAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error retrieving tickets by branch.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpGet("tickets-by-priority")]
         public async Task<IActionResult> GetTicketsByPriority()
         {
-            var result = await _service.GetTicketsByPriorityAsync();
-            return Ok(result);
+            try
+            {
+                var result = await _service.GetTicketsByPriorityAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error retrieving tickets by priority.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpGet("avg-resolution-time")]
         public async Task<IActionResult> GetAvgResolutionTime()
         {
-            var result = await _service.GetAvgResolutionTimeAsync();
-            return Ok(result);
+            try
+            {
+                var result = await _service.GetAvgResolutionTimeAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error retrieving average resolution time.",
+                    Error = ex.Message
+                });
+            }
         }
     }
 }

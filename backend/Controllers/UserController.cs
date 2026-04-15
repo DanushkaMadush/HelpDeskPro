@@ -21,84 +21,206 @@ namespace backend.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            var user = new ApplicationUser
+            try
             {
-                UserName = request.Email,
-                Email = request.Email,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                ContactNo = request.ContactNo,
-                Plant = request.Plant,
-                Department = request.Department,
-                Designation = request.Designation
-            };
-            var result = await _userService.RegisterAsync(user, request.Password);
-            if (!result)
-            {
-                return BadRequest("Registration failed.");
+                if (request == null)
+                    return BadRequest(new { Message = "Invalid request body." });
+
+                var user = new ApplicationUser
+                {
+                    UserName = request.Email,
+                    Email = request.Email,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    ContactNo = request.ContactNo,
+                    Plant = request.Plant,
+                    Department = request.Department,
+                    Designation = request.Designation
+                };
+
+                var result = await _userService.RegisterAsync(user, request.Password);
+
+                if (!result)
+                    return BadRequest(new { Message = "Registration failed." });
+
+                return StatusCode(201, new { Message = "User registered successfully." });
             }
-            return Ok("User registered successfully.");
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error during registration.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var token = await _userService.LoginAsync(request.Email, request.Password);
-            if (token == null)
+            try
             {
-                return Unauthorized("Invalid email or password.");
+                if (request == null)
+                    return BadRequest(new { Message = "Invalid request body." });
+
+                var token = await _userService.LoginAsync(request.Email, request.Password);
+
+                if (token == null)
+                    return Unauthorized(new { Message = "Invalid email or password." });
+
+                return Ok(new { Token = token });
             }
-            return Ok(new { Token = token });
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error during login.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpPost("create-role")]
         public async Task<IActionResult> CreateRole([FromBody] CreateRoleRequest request)
         {
-            var result = await _userService.CreateRoleAsync(request.RoleName);
-            if (!result) return BadRequest("Role creation failed.");
+            try
+            {
+                if (request == null || string.IsNullOrEmpty(request.RoleName))
+                    return BadRequest(new { Message = "RoleName is required." });
 
-            return Ok(new { message = "Role created successfully." });
+                var result = await _userService.CreateRoleAsync(request.RoleName);
+
+                if (!result)
+                    return BadRequest(new { Message = "Role creation failed." });
+
+                return StatusCode(201, new { Message = "Role created successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error creating role.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpPost("assign-role")]
         public async Task<IActionResult> AssignRole([FromBody] AssignRoleRequest request)
         {
-            var result = await _userService.AssignRoleAsync(request.Email, request.RoleName);
-            if (!result) return BadRequest("Failed to assign role.");
+            try
+            {
+                if (request == null)
+                    return BadRequest(new { Message = "Invalid request body." });
 
-            return Ok(new { message = "Role assigned successfully." });
+                var result = await _userService.AssignRoleAsync(request.Email, request.RoleName);
+
+                if (!result)
+                    return BadRequest(new { Message = "Failed to assign role." });
+
+                return Ok(new { Message = "Role assigned successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error assigning role.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpPost("create-permission")]
         public async Task<IActionResult> CreatePermission([FromBody] CreatePermissionRequest request)
         {
-            var result = await _userService.CreatePermissionAsync(request.Name, request.Description);
-            if (!result) return BadRequest("Failed to create permission.");
-            return Ok(new { message = "Permission created successfully." });
+            try
+            {
+                if (request == null || string.IsNullOrEmpty(request.Name))
+                    return BadRequest(new { Message = "Permission name is required." });
+
+                var result = await _userService.CreatePermissionAsync(request.Name, request.Description);
+
+                if (!result)
+                    return BadRequest(new { Message = "Failed to create permission." });
+
+                return StatusCode(201, new { Message = "Permission created successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error creating permission.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpPost("assign-permission")]
         public async Task<IActionResult> AssignPermission([FromBody] AssignPermissionRequest request)
         {
-            var result = await _userService.AssignPermissionToRoleAsync(request.RoleName, request.PermissionName);
-            if (!result) return BadRequest("Failed to assign permission.");
-            return Ok(new { message = "Permission assigned successfully." });
+            try
+            {
+                if (request == null)
+                    return BadRequest(new { Message = "Invalid request body." });
+
+                var result = await _userService.AssignPermissionToRoleAsync(request.RoleName, request.PermissionName);
+
+                if (!result)
+                    return BadRequest(new { Message = "Failed to assign permission." });
+
+                return Ok(new { Message = "Permission assigned successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error assigning permission.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpPost("assign-permission-to-user")]
         public async Task<IActionResult> AssignPermissionToUser([FromBody] AssignPermissionToUserRequest request)
         {
-            var result = await _userService.AssignPermissionToUserAsync(request.Email, request.PermissionName);
-            if (!result) return BadRequest("Failed to assign permission to user.");
+            try
+            {
+                if (request == null)
+                    return BadRequest(new { Message = "Invalid request body." });
 
-            return Ok(new { message = "Permission assigned to user successfully." });
+                var result = await _userService.AssignPermissionToUserAsync(request.Email, request.PermissionName);
+
+                if (!result)
+                    return BadRequest(new { Message = "Failed to assign permission to user." });
+
+                return Ok(new { Message = "Permission assigned to user successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error assigning permission to user.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetUsers([FromQuery] string? role)
         {
-            var users = await _userService.GetUsersAsync(role);
-            return Ok(users);
+            try
+            {
+                var users = await _userService.GetUsersAsync(role);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Error retrieving users.",
+                    Error = ex.Message
+                });
+            }
         }
     }
 }

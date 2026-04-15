@@ -2,12 +2,10 @@
 using backend.Models.DTOs;
 using backend.Interface;
 
-
 namespace backend.Controllers
 {
     [ApiController]
     [Route("api/v1/branches")]
-
     public class BranchController : ControllerBase
     {
         private readonly IBranchService _service;
@@ -18,21 +16,46 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(BranchDTOs.BranchCreateRequest request)
+        public async Task<IActionResult> Create([FromBody] BranchDTOs.BranchCreateRequest request)
         {
-            var result = await _service.CreateBranchAsync(request);
+            try
+            {
+                if (request == null)
+                    return BadRequest(new { Message = "Invalid request body." });
 
-            if (!string.IsNullOrEmpty(result.ErrorMessage))
-                return BadRequest(result);
+                var result = await _service.CreateBranchAsync(request);
 
-            return Ok(result);
+                if (!string.IsNullOrEmpty(result.ErrorMessage))
+                    return BadRequest(result);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "An error occurred while creating branch.",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var branches = await _service.GetAllBranchesAsync();
-            return Ok(branches);
+            try
+            {
+                var branches = await _service.GetAllBranchesAsync();
+                return Ok(branches);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Failed to retrieve branches.",
+                    Error = ex.Message
+                });
+            }
         }
     }
 }
