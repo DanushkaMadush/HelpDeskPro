@@ -1,8 +1,10 @@
 ﻿using backend.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/dashboard")]
     public class DashboardController : ControllerBase

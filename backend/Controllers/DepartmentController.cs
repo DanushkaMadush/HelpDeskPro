@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using backend.Interface;
 using backend.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/departments")]
     public class DepartmentController : ControllerBase

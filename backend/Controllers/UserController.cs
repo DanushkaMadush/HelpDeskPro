@@ -4,9 +4,11 @@ using backend.Models.Entities;
 using backend.Models.DTOs;
 using static backend.Models.DTOs.PermissionDTO;
 using static backend.Models.DTOs.RoleDTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
+    [Authorize]
     [Route("api/v1/users")]
     [ApiController]
     public class UserController : ControllerBase
@@ -18,6 +20,7 @@ namespace backend.Controllers
             _userService = userService;
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
@@ -55,6 +58,7 @@ namespace backend.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {

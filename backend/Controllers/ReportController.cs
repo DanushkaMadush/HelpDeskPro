@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using backend.Interface;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/reports")]
     public class ReportController : ControllerBase
