@@ -88,6 +88,16 @@ export default function Sidebar() {
         Tickets
       </NavLink>
 
+      <NavLink
+        to="/admin/reports"
+        className={linkClass}
+        style={({ isActive }) => ({
+          color: isActive ? colors.primary : colors.text,
+        })}
+      >
+        Reports
+      </NavLink>
+
     </div>
   );
 }
